@@ -8,21 +8,99 @@ import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
 import plotly.express as px
 import pandas as pd
+import numpy as np
 
-
+#load data
 df = pd.read_csv('./data/clean_csv_data/new_bus_arrival_18051.csv')
 
+#preprocess data
+df = df.groupby("date").sum()[["late", "late_by"]]
+#graph1_df = df.groupby(pd.Grouper(freq='D')).sum()[["late", "late_by"]]
+
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.FLATLY])
+
+#function to create a column graph box
+
+#create graphs
+fig1 = px.bar(df, x=df.index, y=df.late)
 
 #set content of tab1
 tab1_content = dbc.Card(
     dbc.CardBody(
         [
-            html.P("This is tab 1!", className="card-text"),
-            dbc.Button("Click here", color="success"),
+            dbc.Row(
+                [
+                    #dbc.Col(html.Div("First column")),
+                    #dbc.Col(html.Div("Second column")),
+                    #dbc.Col(html.Div("Third column"))
+                    dbc.Col(html.Div(
+                        [
+                            html.Div("Number of late buses per date", className="card-header"),
+                            html.Div(
+                                [
+                                    dcc.Graph(figure=fig1)
+                                ],
+                                className="card-body"
+                            ),
+                            
+                        ],
+                        className="card border-primary mb-3"
+                    ))
+                ]
+            ),
+
+            dbc.Row(
+                [
+                    #dbc.Col(html.Div("First column")),
+                    #dbc.Col(html.Div("Second column")),
+                    #dbc.Col(html.Div("Third column"))
+                    dbc.Col(html.Div(
+                        [
+                            html.Div("Header", className="card-header"),
+                            html.Div(
+                                [
+                                    html.H4("Graph 4", className="card-title"),
+                                    html.P("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.", className="card-text")
+                                ],
+                                className="card-body"
+                            ),
+                            
+                        ],
+                        className="card border-primary mb-3"
+                    )),
+                    dbc.Col(html.Div(
+                        [
+                            html.Div("Header", className="card-header"),
+                            html.Div(
+                                [
+                                    html.H4("Graph 5", className="card-title"),
+                                    html.P("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.", className="card-text")
+                                ],
+                                className="card-body"
+                            ),
+                            
+                        ],
+                        className="card border-primary mb-3"
+                    )),
+                    dbc.Col(html.Div(
+                        [
+                            html.Div("Header", className="card-header"),
+                            html.Div(
+                                [
+                                    html.H4("Graph 6", className="card-title"),
+                                    html.P("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.", className="card-text")
+                                ],
+                                className="card-body"
+                            ),
+                            
+                        ],
+                        className="card border-primary mb-3"
+                    ))
+                ]
+            )
         ]
     ),
-    className="mt-3",
+    className="mt-3"
 )
 
 #set content of tab2
