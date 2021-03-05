@@ -9,12 +9,19 @@ from dash.dependencies import Input, Output
 import plotly.express as px
 import pandas as pd
 import numpy as np
+from datetime import datetime
 
 #load data
 df = pd.read_csv('./data/clean_csv_data/new_bus_arrival_18051.csv')
+print(type(df["date"][0]))
+for row in df["date"]:
+    row = datetime.strptime(row, "%d/%m/%Y").strftime("%Y/%m/%d")
+    #print(row)
+print(df['date'][0])
+
 
 #preprocess data
-df = df.groupby("date").sum()[["late", "late_by"]]
+#df = df.groupby("date").sum()[["late", "late_by"]]
 #graph1_df = df.groupby(pd.Grouper(freq='D')).sum()[["late", "late_by"]]
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.FLATLY])
@@ -22,7 +29,8 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.FLATLY])
 #function to create a column graph box
 
 #create graphs
-fig1 = px.bar(df, x=df.index, y=df.late)
+load_df = df.groupby(["date", "first_next_bus_load"], as_index=False).size()
+fig1 = px.bar(load_df, x=load_df["date"], y=load_df["size"], color=load_df["first_next_bus_load"], barmode="group")
 
 #set content of tab1
 tab1_content = dbc.Card(
