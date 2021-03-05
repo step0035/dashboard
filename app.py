@@ -12,11 +12,15 @@ import numpy as np
 from datetime import datetime
 
 #load data
-df = pd.read_csv('./data/clean_csv_data/new_bus_arrival_18051.csv')
-print(type(df["date"][0]))
-for row in df["date"]:
-    row = datetime.strptime(row, "%d/%m/%Y").strftime("%Y/%m/%d")
-    #print(row)
+df = pd.read_csv('./data/clean_csv_data/new_bus_arrival_18121.csv')
+df["date"] = pd.to_datetime(df["date"], format="%d/%m/%Y")
+
+
+""" print(type(df["date"][0]))
+for i in range(len(df["date"])):
+    newDate = datetime.strptime(df.iloc[i]["date"], "%d/%m/%Y").strftime("%Y/%m/%d")
+    df.iloc[i]["date"] = newDate
+    #print(row) """
 print(df['date'][0])
 
 
@@ -122,6 +126,26 @@ tab2_content = dbc.Card(
     className="mt-3",
 )
 
+tab3_content = dbc.Card(
+    dbc.CardBody(
+        [
+            html.P("This is tab 3!", className="card-text"),
+            dbc.Button("Don't click here", color="danger"),
+        ]
+    ),
+    className="mt-3",
+)
+
+tab4_content = dbc.Card(
+    dbc.CardBody(
+        [
+            html.P("This is tab 4!", className="card-text"),
+            dbc.Button("Don't click here", color="danger"),
+        ]
+    ),
+    className="mt-3",
+)
+
 #set app layour
 app.layout = html.Div([
 
@@ -135,8 +159,10 @@ app.layout = html.Div([
                 [
                     dbc.Tabs(
                         [
-                            dbc.Tab(label="Tab 1", tab_id="tab-1"),
-                            dbc.Tab(label="Tab 2", tab_id="tab-2")
+                            dbc.Tab(label="Sufficiency", tab_id="tab-1"),
+                            dbc.Tab(label="Punctuality", tab_id="tab-2"),
+                            dbc.Tab(label="GIS Visualisation", tab_id="tab-3"),
+                            dbc.Tab(label="Threshold & Sentiments", tab_id="tab-4")
                         ],
                         id="tabs",
                         active_tab="tab-1"
@@ -158,6 +184,10 @@ def switch_tab(at):
         return tab1_content
     elif at == "tab-2":
         return tab2_content
+    elif at == "tab-3":
+        return tab3_content
+    elif at == "tab-4":
+        return tab4_content
 
 if __name__ == '__main__':
     app.run_server(debug=True)
