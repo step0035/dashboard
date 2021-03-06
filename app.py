@@ -11,33 +11,27 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 
-#load data
-df = pd.read_csv('./data/clean_csv_data/new_bus_arrival_18121_14.csv')
-df["date"] = pd.to_datetime(df["date"], format="%d/%m/%Y")
-
-
-# """ print(type(df["date"][0]))
-# for i in range(len(df["date"])):
-#     newDate = datetime.strptime(df.iloc[i]["date"], "%d/%m/%Y").strftime("%Y/%m/%d")
-#     df.iloc[i]["date"] = newDate
-#     #print(row) """
-# print(df['date'][0])
-
-
-#preprocess data
-#df = df.groupby("date").sum()[["late", "late_by"]]
-#graph1_df = df.groupby(pd.Grouper(freq='D')).sum()[["late", "late_by"]]
-
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.FLATLY])
 
-#function to create a column graph box
+# filepath = "./data/bus_data/new_bus_arrival_"
 
-#create graphs YAP's
+# Graph 1 Bar Chart of Bus Loads vs Size
+df = pd.read_csv('./data/bus_data/new_bus_arrival_18121_14.csv')
+df["date"] = pd.to_datetime(df["date"], format="%d/%m/%Y")
+
 load_df = df.groupby(["date", "first_next_bus_load"], as_index=False).size()
 fig1 = px.bar(load_df, x=load_df["date"], y=load_df["size"], color=load_df["first_next_bus_load"], barmode="group")
 
-# new_load_df = df.groupby(["date", "first_next_bus_load"], as_index=False).size()
-# fig2 = px.bar(new_load_df, x=new_load_df["date"], y=new_load_df["first_next_bus_load"], color=new_load_df["first_next_bus_load"], title="Long-Form Input")
+# Graph 2 S
+load_df2 = df.groupby(["date", "Late_By"], as_index=False).size()
+fig2 = px.bar(load_df2, x=load_df2["date"], y=load_df2["size"], color=load_df2["Late_By"], barmode="group")
+
+# Graph 3 Taxi Availability
+df_taxi = pd.read_csv('./data/taxi_data/relevant_taxi_availability.csv')
+df_taxi["date"] = pd.to_datetime(df["date"], format="%d/%m/%Y")
+
+load_df_taxi = df_taxi.groupby(["date", "count"], as_index=False).size()
+fig3 = px.bar(load_df_taxi, x=load_df_taxi["date"], y=load_df_taxi["size"], color=load_df_taxi["count"], barmode="group")
 
 #set content of tab1
 tab1_content = dbc.Card(
@@ -50,14 +44,15 @@ tab1_content = dbc.Card(
                     #dbc.Col(html.Div("Third column"))
                     dbc.Col(html.Div(
                         [
-                            html.Div("Number of late buses per date", className="card-header"),
+                            html.Div("Bus Load Count on a Daily Basis", className="card-header"),
+
                             html.Div(
                                 [
+                                    html.P("SEA - Seats Available | SDA - Standing Available | LSD - Limited Standing", className="card-text"),
                                     dcc.Graph(figure=fig1)
                                 ],
                                 className="card-body"
                             ),
-                            
                         ],
                         className="card border-primary mb-3"
                     ))
@@ -71,46 +66,17 @@ tab1_content = dbc.Card(
                     #dbc.Col(html.Div("Third column"))
                     dbc.Col(html.Div(
                         [
-                            html.Div("Header", className="card-header"),
+                            html.Div("Shuttle Bus Dispatch Count on a Daily Basis", className="card-header"),
                             html.Div(
                                 [
-                                    html.H4("Graph 4", className="card-title"),
-                                    html.P("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.", className="card-text")
+                                    # html.P("", className="card-text"),
+                                    dcc.Graph(figure=fig1)
                                 ],
                                 className="card-body"
                             ),
-                            
                         ],
                         className="card border-primary mb-3"
                     )),
-                    dbc.Col(html.Div(
-                        [
-                            html.Div("Header", className="card-header"),
-                            html.Div(
-                                [
-                                    html.H4("Graph 5", className="card-title"),
-                                    html.P("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.", className="card-text")
-                                ],
-                                className="card-body"
-                            ),
-                            
-                        ],
-                        className="card border-primary mb-3"
-                    )),
-                    dbc.Col(html.Div(
-                        [
-                            html.Div("Header", className="card-header"),
-                            html.Div(
-                                [
-                                    html.H4("Graph 6", className="card-title"),
-                                    html.P("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.", className="card-text")
-                                ],
-                                className="card-body"
-                            ),
-                            
-                        ],
-                        className="card border-primary mb-3"
-                    ))
                 ]
             )
         ]
@@ -122,7 +88,41 @@ tab1_content = dbc.Card(
 tab2_content = dbc.Card(
     dbc.CardBody(
         [
-            html.P("This is tab 2!", className="card-text"),
+            dbc.Row(
+                [
+                    #dbc.Col(html.Div("First column")),
+                    #dbc.Col(html.Div("Second column")),
+                    #dbc.Col(html.Div("Third column"))
+                    dbc.Col(html.Div(
+                        [
+                            html.Div("Bus Late Count on a Daily Basis", className="card-header"),
+                            html.Div([
+                                dcc.Dropdown(
+                                    id='busstop_dropdown',
+                                    options=[
+                                        {'label': 'Ayer Rajah Ave (one-north Stn)', 'value': '18051'},
+                                        {'label': 'Ayer Rajah Ave (Opp one-north Stn)', 'value': '18059'},
+                                        {'label': 'Portsdown Rd (one-north Stn/Galaxis)', 'value': '18159'},
+                                        {'label': 'Portsdown Rd (Opp one-north Stn/Galaxis)', 'value': '18151'},
+                                        {'label': 'Buona Vista Flyover (Opp Ayer Rajah Ind Est)', 'value': '18121'},
+                                        {'label': 'Buona Vista Flyover (Ayer Rajah Ind Est)', 'value': '18129'},
+                                    ],
+                                    value='busstop'
+                                ),
+                                html.Div(id='dd-output-container')
+                            ]),
+                            html.Div(
+                                [
+                                    # html.P("SEA - Seats Available | SDA - Standing Available | LSD - Limited Standing", className="card-text"),
+                                    dcc.Graph(figure=fig2)
+                                ],
+                                className="card-body"
+                            ),
+                        ],
+                        className="card border-primary mb-3"
+                    ))
+                ]
+            ),
             dbc.Button("Don't click here", color="danger"),
         ]
     ),
@@ -132,8 +132,54 @@ tab2_content = dbc.Card(
 tab3_content = dbc.Card(
     dbc.CardBody(
         [
-            html.P("This is tab 3!", className="card-text"),
-            dbc.Button("Don't click here", color="danger"),
+            dbc.Row(
+                [
+                    dbc.Col(html.Div(
+                        [
+                            html.Div("Taxi Temporal Video", className="card-header"),
+                            html.Video(
+                                controls = True,
+                                # # id = 'movie_player',
+                                # #src = "https://www.youtube.com/watch?v=gPtn6hD7o8g",
+                                # src = "./data/html/taxi_temporal_2x.mp4",
+                                autoPlay=True,
+                                src='/static/taxi_time_series.mp4'
+                            ),
+                        ],
+                        className="card border-primary mb-3"
+                    )),
+                    dbc.Col(html.Div(
+                        [
+                            html.Div("Taxi Availability Count on a Daily Basis", className="card-header"),
+                            html.Div([
+                                dcc.Dropdown(
+                                    id='busstop_dropdown',
+                                    options=[
+                                        {'label': 'Ayer Rajah Ave (one-north Stn)', 'value': '18051'},
+                                        {'label': 'Ayer Rajah Ave (Opp one-north Stn)', 'value': '18059'},
+                                        {'label': 'Portsdown Rd (one-north Stn/Galaxis)', 'value': '18159'},
+                                        {'label': 'Portsdown Rd (Opp one-north Stn/Galaxis)', 'value': '18151'},
+                                        {'label': 'Buona Vista Flyover (Opp Ayer Rajah Ind Est)', 'value': '18121'},
+                                        {'label': 'Buona Vista Flyover (Ayer Rajah Ind Est)', 'value': '18129'},
+                                    ],
+                                    value='busstop'
+                                ),
+                                html.Div(id='dd-output-container')
+                            ]),
+                            html.Div(
+                                [
+                                    # html.P("SEA - Seats Available | SDA - Standing Available | LSD - Limited Standing", className="card-text"),
+                                    dcc.Graph(figure=fig3)
+                                ],
+                                className="card-body"
+                            ),
+                        ],
+                        className="card border-primary mb-3"
+                    ))
+                ]
+            ),
+
+            
         ]
     ),
     className="mt-3",
@@ -142,8 +188,80 @@ tab3_content = dbc.Card(
 tab4_content = dbc.Card(
     dbc.CardBody(
         [
-            html.P("This is tab 4!", className="card-text"),
-            dbc.Button("Don't click here", color="danger"),
+            dbc.Row(
+                [
+                    dbc.Col(html.Div(
+                        [
+                            html.Div("Age", className="card-header"),
+                            html.Img(
+                                src='/static/Age.png',
+                                style={'height':'100%', 'width':'100%'}
+                            ),
+                        ],
+                        className="card border-primary mb-3"
+                    )),
+                    dbc.Col(html.Div(
+                        [
+                            html.Div("Ideal Transport in Rainy Weather", className="card-header"),
+                            html.Img(
+                                src='/static/if_rain_transport.png',
+                                style={'height':'100%', 'width':'100%'}
+                            ),
+                        ],
+                        className="card border-primary mb-3"
+                    ))
+                ]
+            ),
+
+            dbc.Row(
+                [
+                    dbc.Col(html.Div(
+                        [
+                            html.Div("Reasonable waiting time for Taxi(or other hailing services)", className="card-header"),
+                            html.Img(
+                                src='/static/taxi_waiting_time.png',
+                                style={'height':'100%', 'width':'100%'}
+                            ),
+                        ],
+                        className="card border-primary mb-3"
+                    )),
+                    dbc.Col(html.Div(
+                        [
+                            html.Div("Willingness to wait for buses past the estimated arrival time", className="card-header"),
+                            html.Img(
+                                src='/static/bus_waiting_time.png',
+                                style={'height':'100%', 'width':'100%'}
+                            ),
+                        ],
+                        className="card border-primary mb-3"
+                    )),
+                ]
+            ),
+
+            dbc.Row(
+                [
+                    dbc.Col(html.Div(
+                        [
+                            html.Div("Topic Modelling", className="card-header"),
+                            html.Img(
+                                src='/static/tm_clean.jpg'
+                            ),
+                        ],
+                        className="card border-primary mb-3"
+                    )),
+                    dbc.Col(html.Div(
+                        [
+                            html.Div("Word Cloud", className="card-header"),
+                            html.Img(
+                                src='/static/twitterwordcloud_cleaneddata.png'
+                            ),
+                        ],
+                        className="card border-primary mb-3"
+                    )),
+                ]
+            ),
+
+            
         ]
     ),
     className="mt-3",
@@ -151,20 +269,20 @@ tab4_content = dbc.Card(
 
 #set app layour
 app.layout = html.Div([
-
     dbc.Container(
         [
             html.H3("Transport Efficiency at One-North", className="display-3"),
-            html.P("On this dashboard, we will ", className="lead"),
+            html.P("On this dashboard, we aim to provide a visualisation of the data that we have collected and processed over the past 2 months.", className="lead"),
+            html.P("Data Collection Phase: 24 Dec 2020 - 26 Jan 2021", className="lead"),
             html.Hr(className="my-4"),
 
             html.Div(
                 [
                     dbc.Tabs(
                         [
-                            dbc.Tab(label="Sufficiency", tab_id="tab-1"),
-                            dbc.Tab(label="Punctuality", tab_id="tab-2"),
-                            dbc.Tab(label="GIS Visualisation", tab_id="tab-3"),
+                            dbc.Tab(label="Bus Sufficiency", tab_id="tab-1"),
+                            dbc.Tab(label="Bus Punctuality", tab_id="tab-2"),
+                            dbc.Tab(label="Taxi Availability", tab_id="tab-3"),
                             dbc.Tab(label="Threshold & Sentiments", tab_id="tab-4")
                         ],
                         id="tabs",
@@ -182,6 +300,14 @@ app.layout = html.Div([
     Output("content", "children"),
     [Input("tabs", "active_tab")]
 )
+
+# @app.callback(
+#     dash.dependencies.Output('dd-output-container', 'children'),
+#     [dash.dependencies.Input('busstop_dropdown', 'value')])
+
+# def update_output(value):
+#     return 'You have selected "{}"'.format(value)
+
 def switch_tab(at):
     if at == "tab-1":
         return tab1_content
