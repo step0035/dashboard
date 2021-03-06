@@ -140,17 +140,17 @@ tab3_content = dbc.Card(
                             html.Video(
                                 controls = True,
                                 # # id = 'movie_player',
-                                # #src = "https://www.youtube.com/watch?v=gPtn6hD7o8g",
-                                # src = "./data/html/taxi_temporal_2x.mp4",
                                 autoPlay=True,
                                 src='/static/taxi_time_series.mp4'
                             ),
                         ],
                         className="card border-primary mb-3"
-                    )),
-                    dbc.Col(html.Div(
+                        )),
+                ]),
+
+                dbc.Col(html.Div(
                         [
-                            html.Div("Taxi Availability Count on a Daily Basis", className="card-header"),
+                            html.Div("Bus Late Count on a Daily Basis", className="card-header"),
                             html.Div([
                                 dcc.Dropdown(
                                     id='busstop_dropdown',
@@ -176,14 +176,10 @@ tab3_content = dbc.Card(
                         ],
                         className="card border-primary mb-3"
                     ))
-                ]
-            ),
-
-            
-        ]
-    ),
-    className="mt-3",
+        ]    
+    )
 )
+
 
 tab4_content = dbc.Card(
     dbc.CardBody(
