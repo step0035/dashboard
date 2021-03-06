@@ -12,33 +12,8 @@ import numpy as np
 from datetime import datetime
 import os
 
-#load data
-df = pd.read_csv('./data/clean_csv_data/new_bus_arrival_18121_14.csv')
-df["date"] = pd.to_datetime(df["date"], format="%d/%m/%Y")
-
-
-# """ print(type(df["date"][0]))
-# for i in range(len(df["date"])):
-#     newDate = datetime.strptime(df.iloc[i]["date"], "%d/%m/%Y").strftime("%Y/%m/%d")
-#     df.iloc[i]["date"] = newDate
-#     #print(row) """
-# print(df['date'][0])
-
-
-#preprocess data
-#df = df.groupby("date").sum()[["late", "late_by"]]
-#graph1_df = df.groupby(pd.Grouper(freq='D')).sum()[["late", "late_by"]]
-
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.FLATLY])
-
-#function to create a column graph box
-
-#create graphs YAP's
-load_df = df.groupby(["date", "first_next_bus_load"], as_index=False).size()
-fig1 = px.bar(load_df, x=load_df["date"], y=load_df["size"], color=load_df["first_next_bus_load"], barmode="group")
-
-#new_load_df = df.groupby(["date", "first_next_bus_load"], as_index=False).size()
-#fig2 = px.bar(new_load_df, x=new_load_df["date"], y=new_load_df["first_next_bus_load"], color=new_load_df["first_next_bus_load"], title="Long-Form Input")
+app.config.suppress_callback_exceptions = True
 
 #set content of tab1
 tab1_content = dbc.Card(
@@ -46,18 +21,25 @@ tab1_content = dbc.Card(
         [
             dbc.Row(
                 [
-                    dbc.Col(html.Div(
-                        [
-                            html.Div("Buses", className="card-header"),
-                            html.Div([dcc.Graph(id="tab1_bus_graph")], className="card-body"),
-                            html.Div(
-                                dcc.Dropdown(id="bus_stop_no", options=[{"label": filename, "value": filename} for filename in os.listdir("./data/clean_csv_data/")]),
-                                dcc.Dropdown(id="bus_no", options=),
-                                dcc.RadioItems(id="period", options=)
-                            )
-                        ],
+                    dbc.Col(html.Div([
+                        html.Div("Buses", className="card-header"),
+                        html.Div([dcc.Graph(id="tab1_bus_graph")], className="card-body")],
                         className="card border-primary mb-3"
-                    ))
+                    ),
+                    width=9
+                    ),
+
+                    dbc.Col(html.Div([
+                        html.Div("Filters", className="card-header"),
+                        dcc.Dropdown(id="bus_stop_no", options=[{"label": filename, "value": filename} for filename in os.listdir("./data/clean_csv_data/")], value=os.listdir("./data/clean_csv_data/")[0], style={"margin-top":30}),
+                        dcc.Dropdown(id="bus_no", style={"margin-top":30}),
+                        #dcc.RadioItems(id="period", options=)
+                    ],
+                    className="form-group"),
+                    width=3,
+                    className="card border-primary mb-3",
+                    style={"textAlign":"center"}
+                    )
                 ]
             )
         ]
@@ -140,11 +122,32 @@ def switch_tab(at):
         return tab4_content
 
 @app.callback(
-    Output("tab1_bus_graph", "figure").
-    Input("bus_stop_no", "value"),
-    Input("bus_no", "value")#,
-    #Input("period", "value")
+    Output("bus_no", "options"),
+    Output("bus_no", "value"),
+    Input("bus_stop_no", "value")
 )
+def select_bus_stop(bus_stop_no):
+    df = pd.read_csv(f"./data/clean_csv_data/{bus_stop_no}")
+    all_buses = df["bus_number"].unique()
+    options = [{"label": bus_no, "value": bus_no} for bus_no in all_buses]
+    value = all_buses[0]
+
+    return options, value
+
+@app.callback(
+    Output("tab1_bus_graph", "figure"),
+    Input("bus_stop_no", "value"),
+    Input("bus_no", "value")
+)
+def select_bus_no(bus_stop_no, bus_no):
+    df = pd.read_csv(f"./data/clean_csv_data/{bus_stop_no}")
+    df = df[df["bus_number"]==bus_no]
+    df["date"] = pd.to_datetime(df["date"], format="%d/%m/%Y")
+    df = df.groupby(["date", "first_next_bus_load"], as_index=False).size()
+    fig1 = px.bar(df, x=df["date"], y=df["size"], color=df["first_next_bus_load"], barmode="group")
+
+    return fig1
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)
