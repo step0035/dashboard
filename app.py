@@ -12,16 +12,16 @@ import numpy as np
 from datetime import datetime
 
 #load data
-df = pd.read_csv('./data/clean_csv_data/new_bus_arrival_18121.csv')
+df = pd.read_csv('./data/clean_csv_data/new_bus_arrival_18121_14.csv')
 df["date"] = pd.to_datetime(df["date"], format="%d/%m/%Y")
 
 
-""" print(type(df["date"][0]))
-for i in range(len(df["date"])):
-    newDate = datetime.strptime(df.iloc[i]["date"], "%d/%m/%Y").strftime("%Y/%m/%d")
-    df.iloc[i]["date"] = newDate
-    #print(row) """
-print(df['date'][0])
+# """ print(type(df["date"][0]))
+# for i in range(len(df["date"])):
+#     newDate = datetime.strptime(df.iloc[i]["date"], "%d/%m/%Y").strftime("%Y/%m/%d")
+#     df.iloc[i]["date"] = newDate
+#     #print(row) """
+# print(df['date'][0])
 
 
 #preprocess data
@@ -32,9 +32,12 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.FLATLY])
 
 #function to create a column graph box
 
-#create graphs
+#create graphs YAP's
 load_df = df.groupby(["date", "first_next_bus_load"], as_index=False).size()
 fig1 = px.bar(load_df, x=load_df["date"], y=load_df["size"], color=load_df["first_next_bus_load"], barmode="group")
+
+# new_load_df = df.groupby(["date", "first_next_bus_load"], as_index=False).size()
+# fig2 = px.bar(new_load_df, x=new_load_df["date"], y=new_load_df["first_next_bus_load"], color=new_load_df["first_next_bus_load"], title="Long-Form Input")
 
 #set content of tab1
 tab1_content = dbc.Card(
@@ -151,8 +154,8 @@ app.layout = html.Div([
 
     dbc.Container(
         [
-            html.H1("Hello", className="display-3"),
-            html.P("Welcome to my Dashboard, my name is hululuhuhu", className="lead"),
+            html.H3("Transport Efficiency at One-North", className="display-3"),
+            html.P("On this dashboard, we will ", className="lead"),
             html.Hr(className="my-4"),
 
             html.Div(
