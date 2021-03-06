@@ -10,6 +10,7 @@ import plotly.express as px
 import pandas as pd
 import numpy as np
 from datetime import datetime
+import os
 
 #load data
 df = pd.read_csv('./data/clean_csv_data/new_bus_arrival_18121_14.csv')
@@ -36,8 +37,8 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.FLATLY])
 load_df = df.groupby(["date", "first_next_bus_load"], as_index=False).size()
 fig1 = px.bar(load_df, x=load_df["date"], y=load_df["size"], color=load_df["first_next_bus_load"], barmode="group")
 
-# new_load_df = df.groupby(["date", "first_next_bus_load"], as_index=False).size()
-# fig2 = px.bar(new_load_df, x=new_load_df["date"], y=new_load_df["first_next_bus_load"], color=new_load_df["first_next_bus_load"], title="Long-Form Input")
+#new_load_df = df.groupby(["date", "first_next_bus_load"], as_index=False).size()
+#fig2 = px.bar(new_load_df, x=new_load_df["date"], y=new_load_df["first_next_bus_load"], color=new_load_df["first_next_bus_load"], title="Long-Form Input")
 
 #set content of tab1
 tab1_content = dbc.Card(
@@ -45,69 +46,15 @@ tab1_content = dbc.Card(
         [
             dbc.Row(
                 [
-                    #dbc.Col(html.Div("First column")),
-                    #dbc.Col(html.Div("Second column")),
-                    #dbc.Col(html.Div("Third column"))
                     dbc.Col(html.Div(
                         [
-                            html.Div("Number of late buses per date", className="card-header"),
+                            html.Div("Buses", className="card-header"),
+                            html.Div([dcc.Graph(id="tab1_bus_graph")], className="card-body"),
                             html.Div(
-                                [
-                                    dcc.Graph(figure=fig1)
-                                ],
-                                className="card-body"
-                            ),
-                            
-                        ],
-                        className="card border-primary mb-3"
-                    ))
-                ]
-            ),
-
-            dbc.Row(
-                [
-                    #dbc.Col(html.Div("First column")),
-                    #dbc.Col(html.Div("Second column")),
-                    #dbc.Col(html.Div("Third column"))
-                    dbc.Col(html.Div(
-                        [
-                            html.Div("Header", className="card-header"),
-                            html.Div(
-                                [
-                                    html.H4("Graph 4", className="card-title"),
-                                    html.P("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.", className="card-text")
-                                ],
-                                className="card-body"
-                            ),
-                            
-                        ],
-                        className="card border-primary mb-3"
-                    )),
-                    dbc.Col(html.Div(
-                        [
-                            html.Div("Header", className="card-header"),
-                            html.Div(
-                                [
-                                    html.H4("Graph 5", className="card-title"),
-                                    html.P("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.", className="card-text")
-                                ],
-                                className="card-body"
-                            ),
-                            
-                        ],
-                        className="card border-primary mb-3"
-                    )),
-                    dbc.Col(html.Div(
-                        [
-                            html.Div("Header", className="card-header"),
-                            html.Div(
-                                [
-                                    html.H4("Graph 6", className="card-title"),
-                                    html.P("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.", className="card-text")
-                                ],
-                                className="card-body"
-                            ),
-                            
+                                dcc.Dropdown(id="bus_stop_no", options=[{"label": filename, "value": filename} for filename in os.listdir("./data/clean_csv_data/")]),
+                                dcc.Dropdown(id="bus_no", options=),
+                                dcc.RadioItems(id="period", options=)
+                            )
                         ],
                         className="card border-primary mb-3"
                     ))
@@ -191,6 +138,13 @@ def switch_tab(at):
         return tab3_content
     elif at == "tab-4":
         return tab4_content
+
+@app.callback(
+    Output("tab1_bus_graph", "figure").
+    Input("bus_stop_no", "value"),
+    Input("bus_no", "value")#,
+    #Input("period", "value")
+)
 
 if __name__ == '__main__':
     app.run_server(debug=True)
