@@ -287,7 +287,7 @@ app.layout = html.Div([
                             dbc.Tab(label="Bus Sufficiency", tab_id="tab-1"),
                             dbc.Tab(label="Bus Punctuality", tab_id="tab-2"),
                             dbc.Tab(label="Taxi Availability", tab_id="tab-3"),
-                            dbc.Tab(label="Threshold & Sentiments", tab_id="tab-4")
+                            dbc.Tab(label="Survey & Sentiments", tab_id="tab-4")
                         ],
                         id="tabs",
                         active_tab="tab-1"
