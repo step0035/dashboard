@@ -33,10 +33,10 @@ shutfig = px.bar(df, x=df["date"], y=df["size"], color=df["first_next_bus_load"]
 # fig2 = px.bar(load_df2, x=load_df2["date"], y=load_df2["size"], color=load_df2["Late_By"], barmode="group")
 
 # Graph 3 Taxi Availability # ERROR HERE
-# df_taxi = pd.read_csv('./data/taxi_data/relevant_taxi_availability.csv')
-# df_taxi["date"] = pd.to_datetime(df_taxi["date"], format="%d/%m/%Y")
-# df_taxi = df_taxi.groupby(["date", "count"], as_index=False).size()
-# fig3 = px.bar(df_taxi, x=df_taxi["date"], y=df_taxi["size"], color=df_taxi["count"], barmode="group")
+df_taxi = pd.read_csv('./data/taxi_data/relevant_taxi_availability.csv')
+df_taxi["date"] = pd.to_datetime(df_taxi["date"], format="%m/%d/%Y")
+df_taxi = df_taxi.groupby(["date", "count"], as_index=False).size()
+fig3 = px.bar(df_taxi, x=df_taxi["date"], y=df_taxi["size"], color=df_taxi["count"], barmode="group")
 
 #set content of tab1
 tab1_content = dbc.Card(
@@ -175,13 +175,12 @@ tab3_content = dbc.Card(
                             #     ),
                             #     html.Div(id='dd-output-container')
                             # ]),
-                            # html.Div(
-                            #     [
-                            #         # html.P("SEA - Seats Available | SDA - Standing Available | LSD - Limited Standing", className="card-text"),
-                            #         dcc.Graph(figure=fig3)
-                            #     ],
-                            #     className="card-body"
-                            # ),
+                            html.Div(
+                                [
+                                    dcc.Graph(figure=fig3)
+                                ],
+                                className="card-body"
+                            ),
                         ],
                         className="card border-primary mb-3"
                     ))
