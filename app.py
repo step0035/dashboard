@@ -89,7 +89,7 @@ tab1_content = dbc.Card(
             dbc.Row(
                 [
                     dbc.Col([
-                        html.Div("Bus Load Count on a Daily Basis", className="card-header", style={"margin-top":10}),
+                        html.Div("Bus Load Count", className="card-header", style={"margin-top":10}),
                         html.Div([
                             html.P("SEA - Seats Available | SDA - Standing Available | LSD - Limited Standing", className="card-text", style={"textAlign":"center"}),
                             dcc.Graph(id="tab1_bus_graph"),
@@ -284,109 +284,21 @@ tab2_content = dbc.Card(
             dbc.Row(
                 [
                     dbc.Col([
-                        html.Div("Bus Load Count on a Daily Basis", className="card-header", style={"margin-top":10}),
-                        html.Div([
-                            html.P("SEA - Seats Available | SDA - Standing Available | LSD - Limited Standing", className="card-text", style={"textAlign":"center"}),
-                            dcc.Graph(id="tab2_bus_graph"),
-                        ]),
+                        html.Div("Bus Late Count", className="card-header", style={"margin-top":10}),
+                        # html.Div([
+                        #     html.P("SEA - Seats Available | SDA - Standing Available | LSD - Limited Standing", className="card-text", style={"textAlign":"center"}),
+                        #     dcc.Graph(id="tab2_bus_graph"),
+                        # ]),
                     ],
                     # className="card border-primary mb-3"
                     ),
                 ]),
-
-            # dbc.Row(
-            #     [
-            #         dbc.Col([
-            #             html.Div("Shuttle Bus Dispatch Count on a Daily Basis", className="card-header"),
-            #             html.Div([
-            #                 dcc.Graph(figure=shutfig),
-            #             ]),
-            #         ],
-            #         # className="card border-primary mb-3"
-            #         ),
-            #     ]),
         ]
     ),
     className="mt-3",
 )
-
 ###################################################################################
-
-# dbc.Row(
-            #     [
-            #         dbc.Col(html.Div([
-            #             html.Div("Bus Stop", className="card-header"),
-            #             dcc.Dropdown(
-            #                 id="tab2_bus_stop_no",
-            #                 options=[
-            #                     {'label': 'Ayer Rajah Ave (one-north Stn)', 'value': '18051'},
-            #                     {'label': 'Ayer Rajah Ave (Opp one-north Stn)', 'value': '18059'},
-            #                     {'label': 'Portsdown Rd (one-north Stn/Galaxis)', 'value': '18159'},
-            #                     {'label': 'Portsdown Rd (Opp one-north Stn/Galaxis)', 'value': '18151'},
-            #                     {'label': 'Buona Vista Flyover (Opp Ayer Rajah Ind Est)', 'value': '18121'},
-            #                     {'label': 'Buona Vista Flyover (Ayer Rajah Ind Est)', 'value': '18129'},
-            #                 ],
-            #                 value='18051'
-            #             ),
-            #             dcc.RadioItems(
-            #                 id="tab2_radioitems",
-            #                 options=[
-            #                     {"label": "Show All Dates", "value": "all_dates"},
-            #                     {"label": "Show All Hours", "value": "all_hour"},
-            #                     {"label": "Show by Day of Week", "value": "day_week"},
-            #                     {"label": "Filter by Weekday", "value": "weekday"},
-            #                     {"label": "Show Selected Day", "value": "select_day"}
-            #                 ],
-            #                 value="all_dates",
-            #                 labelStyle = {"display": "block"}
-            #             ),
-            #             html.Div(id='tab2_output-container-date-picker-single')
-            #         ]),
-            #         ),
-            #         dbc.Col(html.Div([
-            #             html.Div("Bus Number", className="card-header"),
-            #             dcc.Dropdown(id="tab2_bus_no"),
-            #         ]),
-            #         ),
-            #     ]),
-
-            # dbc.Row(
-            #     [
-            #         dbc.Col(html.Div([
-            #                 html.Div("Bus Late Count on a Daily Basis", className="card-header", style={"margin-top":10}),
-            #                 html.Div([dcc.Graph(id="tab2_bus_graph")], className="card-body")],
-            #                 # className="card border-primary mb-3"
-            #             ),
-            #             ),
-            #     ]
-            # ),
-# #TAB 2
-# @app.callback(
-#     Output("tab2_bus_no", "options"),
-#     Output("tab2_bus_no", "value"),
-#     Input("tab2_bus_stop_no", "value")
-# )
-# def select_bus_stop(bus_stop_no):
-#     df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
-#     all_buses = df["bus_number"].unique()
-#     options = [{"label": bus_no, "value": bus_no} for bus_no in all_buses]
-#     value = all_buses[0]
-
-#     return options, value
-
-# @app.callback(
-#     Output("tab2_bus_graph", "figure"),
-#     Input("tab2_bus_stop_no", "value"),
-#     Input("tab2_bus_no", "value")
-# )
-# def select_bus_no(bus_stop_no, bus_no):
-#     df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
-#     df = df[df["bus_number"]==bus_no]
-#     df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y")
-#     df = df.groupby(["date", "Late_By"], as_index=False).size()
-#     fig = px.bar(df, x=df["date"], y=df["size"], color=df["Late_By"])
-
-#     return fig
+# TAB 2
 
 # Choose bus stop
 @app.callback(
