@@ -49,11 +49,12 @@ tab1_content = dbc.Card(
                         ),
                         dcc.DatePickerSingle(
                             id='date_picker',
-                            min_date_allowed=date(2020, 12, 24),
-                            max_date_allowed=date(2021, 3, 5),
                             style={"margin-top":10},
-                            # initial_visible_month=date(2020, 12, 24),
-                            # end_date=date(2021, 3, 5)
+                        ),
+                        dcc.Checklist(
+                            id="checkbox",
+                            options=[{"label": "Show All Days", "value": "all"}],
+                            value=["all"]
                         ),
                         html.Div(id='output-container-date-picker-single')
                     ]),
@@ -94,6 +95,8 @@ tab1_content = dbc.Card(
 
 ##########################################################################################################################
 #TAB 1
+
+# Choose bus stop
 @app.callback(
     Output("tab1_bus_no", "options"),
     Output("tab1_bus_no", "value"),
@@ -103,43 +106,63 @@ def select_bus_stop(bus_stop_no):
     df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
     all_buses = df["bus_number"].unique()
     options = [{"label": bus_no, "value": bus_no} for bus_no in all_buses]
-    value = all_buses[0]
+    value = all_buses[0] #default to first option
 
     return options, value
 
+# Choose bus no
 @app.callback(
-    Output("tab1_bus_graph", "figure"),
+    Output("date_picker", "min_date_allowed"),
+    Output("date_picker", "max_date_allowed"),
+    Output("date_picker", "date"),
     Input("tab1_bus_stop_no", "value"),
     Input("tab1_bus_no", "value")
 )
 def select_bus_no(bus_stop_no, bus_no):
     df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
     df = df[df["bus_number"]==bus_no]
-    df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y")
-    df = df.groupby(["date", "first_next_bus_load"], as_index=False).size()
-    fig = px.bar(df, x=df["date"], y=df["size"], color=df["first_next_bus_load"], barmode="group")
+    min_date_allowed = df["date"].unique()[0]
+    max_date_allowed = df["date"].unique()[-1]
+    date_arr = min_date_allowed.split("/")
+    date_default = date(int(date_arr[2]), int(date_arr[0]), int(date_arr[1])) #default to first allowed date
 
-    return fig
+    return min_date_allowed, max_date_allowed, date_default
 
 # Date Picker
 @app.callback(
     Output('output-container-date-picker-single', 'children'),
-    Input('date_picker', 'date'))
+    Output('tab1_bus_graph', 'figure'),
+    Input('date_picker', 'date'),
+    Input('tab1_bus_stop_no', 'value'),
+    Input('tab1_bus_no', 'value'),
+    Input("checkbox", "value")
+)
 
-def update_output(date_value):
+def update_output(date_value, bus_stop_no, bus_no, checkbox):
     string_prefix = 'You have selected: '
-    if date_value is not None:
+
+    if checkbox != ["all"]:
         date_object = date.fromisoformat(date_value)
         date_string = date_object.strftime('%B %d, %Y')
-        return string_prefix + date_string
+        df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
+        df = df[df["bus_number"]==bus_no]
+        df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y")
+        test = date_object.strftime("%#m/%#d/%Y")
+        df = df.groupby(["date", 'Hour', "first_next_bus_load"], as_index=False).size()
+        df = df[df["date"]==test]
+        fig = px.bar(df, x=df["Hour"], y=df["size"], color=df["first_next_bus_load"], barmode="group")
 
-@app.callback(
-    Output("tab1_bus_graph", "figure"),
-    Input("tab1_bus_stop_no", "value"),
-    Input("tab1_bus_no", "value"),
-    Input("date_value", "value")
+        return string_prefix + date_string, fig
 
-def update_figure(bus_stop, bus_number, date_value):
+    else:
+        df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
+        df = df[df["bus_number"]==bus_no]
+        df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y")
+        df = df.groupby(["date", "first_next_bus_load"], as_index=False).size()
+        fig = px.bar(df, x=df["date"], y=df["size"], color=df["first_next_bus_load"], barmode="group")
+
+        return None, fig
+
 
 
 
