@@ -12,6 +12,7 @@ import numpy as np
 from datetime import datetime
 from datetime import date
 from pandas.api.types import CategoricalDtype
+import plotly.graph_objects as go
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.FLATLY])
 app.config.suppress_callback_exceptions = True
@@ -229,7 +230,7 @@ tab2_content = dbc.Card(
         [
             dbc.Row(
                 [
-                    dbc.Col(html.Div([
+                    dbc.Col([
                         html.Div("Bus Stop", className="card-header"),
                         dcc.Dropdown(
                             id="tab2_bus_stop_no",
@@ -241,31 +242,269 @@ tab2_content = dbc.Card(
                                 {'label': 'Buona Vista Flyover (Opp Ayer Rajah Ind Est)', 'value': '18121'},
                                 {'label': 'Buona Vista Flyover (Ayer Rajah Ind Est)', 'value': '18129'},
                             ],
-                            value='18051'
+                            value="18051"
                         ),
+                        dcc.RadioItems(
+                            id="tab2_radioitems",
+                            options=[
+                                {"label": "Show All Dates", "value": "all_dates"},
+                                {"label": "Show All Hours", "value": "all_hour"},
+                                {"label": "Show by Day of Week", "value": "day_week"},
+                                {"label": "Filter by Weekday", "value": "weekday"},
+                                {"label": "Show Selected Day", "value": "select_day"}
+                            ],
+                            value="all_dates",
+                            labelStyle = {"display": "block"}
+                        ),
+                        html.Div(id='tab2_output-container-date-picker-single')
                     ]),
-                    ),
-                    dbc.Col(html.Div([
+                    dbc.Col([
                         html.Div("Bus Number", className="card-header"),
                         dcc.Dropdown(id="tab2_bus_no"),
+                        dcc.DatePickerSingle(
+                            id='tab2_date_picker',
+                            style={"margin-top":10},
+                        ),
+                        dcc.Dropdown(
+                            id="tab2_weekdays",
+                            options=[
+                                {"label": "Monday", "value": "Monday"},
+                                {"label": "Tuesday", "value": "Tuesday"},
+                                {"label": "Wednesday", "value": "Wednesday"},
+                                {"label": "Thursday", "value": "Thursday"},
+                                {"label": "Friday", "value": "Friday"},
+                                {"label": "Saturday", "value": "Saturday"},
+                                {"label": "Sunday", "value": "Sunday"}
+                            ],
+                            value = "Monday"
+                        )
                     ]),
-                    ),
                 ]),
 
             dbc.Row(
                 [
-                    dbc.Col(html.Div([
-                            html.Div("Bus Late Count on a Daily Basis", className="card-header", style={"margin-top":10}),
-                            html.Div([dcc.Graph(id="tab2_bus_graph")], className="card-body")],
-                            # className="card border-primary mb-3"
-                        ),
-                        ),
-                ]
-            ),
+                    dbc.Col([
+                        html.Div("Bus Load Count on a Daily Basis", className="card-header", style={"margin-top":10}),
+                        html.Div([
+                            html.P("SEA - Seats Available | SDA - Standing Available | LSD - Limited Standing", className="card-text", style={"textAlign":"center"}),
+                            dcc.Graph(id="tab2_bus_graph"),
+                        ]),
+                    ],
+                    # className="card border-primary mb-3"
+                    ),
+                ]),
+
+            # dbc.Row(
+            #     [
+            #         dbc.Col([
+            #             html.Div("Shuttle Bus Dispatch Count on a Daily Basis", className="card-header"),
+            #             html.Div([
+            #                 dcc.Graph(figure=shutfig),
+            #             ]),
+            #         ],
+            #         # className="card border-primary mb-3"
+            #         ),
+            #     ]),
         ]
     ),
     className="mt-3",
 )
+
+###################################################################################
+
+# dbc.Row(
+            #     [
+            #         dbc.Col(html.Div([
+            #             html.Div("Bus Stop", className="card-header"),
+            #             dcc.Dropdown(
+            #                 id="tab2_bus_stop_no",
+            #                 options=[
+            #                     {'label': 'Ayer Rajah Ave (one-north Stn)', 'value': '18051'},
+            #                     {'label': 'Ayer Rajah Ave (Opp one-north Stn)', 'value': '18059'},
+            #                     {'label': 'Portsdown Rd (one-north Stn/Galaxis)', 'value': '18159'},
+            #                     {'label': 'Portsdown Rd (Opp one-north Stn/Galaxis)', 'value': '18151'},
+            #                     {'label': 'Buona Vista Flyover (Opp Ayer Rajah Ind Est)', 'value': '18121'},
+            #                     {'label': 'Buona Vista Flyover (Ayer Rajah Ind Est)', 'value': '18129'},
+            #                 ],
+            #                 value='18051'
+            #             ),
+            #             dcc.RadioItems(
+            #                 id="tab2_radioitems",
+            #                 options=[
+            #                     {"label": "Show All Dates", "value": "all_dates"},
+            #                     {"label": "Show All Hours", "value": "all_hour"},
+            #                     {"label": "Show by Day of Week", "value": "day_week"},
+            #                     {"label": "Filter by Weekday", "value": "weekday"},
+            #                     {"label": "Show Selected Day", "value": "select_day"}
+            #                 ],
+            #                 value="all_dates",
+            #                 labelStyle = {"display": "block"}
+            #             ),
+            #             html.Div(id='tab2_output-container-date-picker-single')
+            #         ]),
+            #         ),
+            #         dbc.Col(html.Div([
+            #             html.Div("Bus Number", className="card-header"),
+            #             dcc.Dropdown(id="tab2_bus_no"),
+            #         ]),
+            #         ),
+            #     ]),
+
+            # dbc.Row(
+            #     [
+            #         dbc.Col(html.Div([
+            #                 html.Div("Bus Late Count on a Daily Basis", className="card-header", style={"margin-top":10}),
+            #                 html.Div([dcc.Graph(id="tab2_bus_graph")], className="card-body")],
+            #                 # className="card border-primary mb-3"
+            #             ),
+            #             ),
+            #     ]
+            # ),
+# #TAB 2
+# @app.callback(
+#     Output("tab2_bus_no", "options"),
+#     Output("tab2_bus_no", "value"),
+#     Input("tab2_bus_stop_no", "value")
+# )
+# def select_bus_stop(bus_stop_no):
+#     df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
+#     all_buses = df["bus_number"].unique()
+#     options = [{"label": bus_no, "value": bus_no} for bus_no in all_buses]
+#     value = all_buses[0]
+
+#     return options, value
+
+# @app.callback(
+#     Output("tab2_bus_graph", "figure"),
+#     Input("tab2_bus_stop_no", "value"),
+#     Input("tab2_bus_no", "value")
+# )
+# def select_bus_no(bus_stop_no, bus_no):
+#     df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
+#     df = df[df["bus_number"]==bus_no]
+#     df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y")
+#     df = df.groupby(["date", "Late_By"], as_index=False).size()
+#     fig = px.bar(df, x=df["date"], y=df["size"], color=df["Late_By"])
+
+#     return fig
+
+# Choose bus stop
+@app.callback(
+    Output("tab2_bus_no", "options"),
+    Output("tab2_bus_no", "value"),
+    Input("tab2_bus_stop_no", "value")
+)
+def select_bus_stop(bus_stop_no):
+    df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
+    all_buses = df["bus_number"].unique()
+    options = [{"label": bus_no, "value": bus_no} for bus_no in all_buses]
+    value = all_buses[0] #default to first option
+
+    return options, value
+
+# Choose bus no
+@app.callback(
+    Output("tab2_date_picker", "min_date_allowed"),
+    Output("tab2_date_picker", "max_date_allowed"),
+    Output("tab2_date_picker", "date"),
+    Input("tab2_bus_stop_no", "value"),
+    Input("tab2_bus_no", "value")
+)
+def select_bus_no(bus_stop_no, bus_no):
+    df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
+    df = df[df["bus_number"]==bus_no]
+    min_date_allowed = df["date"].unique()[0]
+    max_date_allowed = df["date"].unique()[-1]
+    date_arr = min_date_allowed.split("/")
+    date_default = date(int(date_arr[2]), int(date_arr[0]), int(date_arr[1])) #default to first allowed date
+
+    return min_date_allowed, max_date_allowed, date_default
+
+# Filters
+@app.callback(
+    Output('tab2_output-container-date-picker-single', 'children'),
+    Output('tab2_bus_graph', 'figure'),
+    Output("tab2_date_picker", "disabled"),
+    Output('tab2_weekdays', 'disabled'),
+    Input('tab2_date_picker', 'date'),
+    Input('tab2_bus_stop_no', 'value'),
+    Input('tab2_bus_no', 'value'),
+    Input("tab2_radioitems", "value"),
+    Input("tab2_weekdays", "value")
+)
+
+def update_output(date_value, bus_stop_no, bus_no, radioitem, weekday):
+    if radioitem == "all_dates":
+        df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
+        df = df[df["bus_number"]==bus_no]
+        df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y")
+        df = df.groupby(["date", "Late_By"], as_index=False).size()
+        fig = px.bar(df, x=df["date"], y=df["size"], color=df["Late_By"])
+
+        return None, fig, True, True
+
+    if radioitem == "all_hour":
+        df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
+        df = df[df["bus_number"]==bus_no]
+        #df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y")
+        df = df.groupby(["Hour", "Late_By"], as_index=False).size()
+        fig = px.bar(df, x=df["Hour"], y=df["size"], color=df["Late_By"])
+
+        return None, fig, True, True
+
+    if radioitem == "day_week":
+        df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
+        df = df[df["bus_number"]==bus_no]
+        cats = [ 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+        cat_type = CategoricalDtype(categories=cats, ordered=True)
+        df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y")
+        df["Weekday"] = df["date"].dt.day_name()
+        df['Weekday']=df['Weekday'].astype(cat_type)
+        df = df.groupby(["Weekday", "Late_By"], as_index=False).size()
+        fig = px.bar(df, x=df["Weekday"], y=df["size"], color=df["Late_By"])
+
+        return None, fig, True, True
+
+    if radioitem == "weekday":
+        df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
+        df = df[df["bus_number"]==bus_no]
+        cats = [ 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+        cat_type = CategoricalDtype(categories=cats, ordered=True)
+        df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y")
+        df["Weekday"] = df["date"].dt.day_name()
+        df['Weekday']=df['Weekday'].astype(cat_type)
+        df = df.groupby(["Weekday", "Hour"], as_index=False).mean()
+        df = df[df["Weekday"] == weekday]
+        fig = px.bar(df, x=df["Hour"], y=df["Late_By"])
+        fig.add_shape(
+            go.layout.Shape(
+                type="line",
+                x0=0,
+                y0=300,
+                x1=24,
+                y1=300,
+                line=dict(
+                    color="Orange",
+                    width=2,
+                    dash="solid",
+                ),
+        ))
+
+        return None, fig, True, False
+    
+    if radioitem == "select_day":
+        string_prefix = 'You have selected: '
+        date_object = date.fromisoformat(date_value)
+        date_string = date_object.strftime('%B %d, %Y')
+        df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
+        df = df[df["bus_number"]==bus_no]
+        df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y")
+        df = df.groupby(["date", 'Hour', "Late_By"], as_index=False).size()
+        df = df[df["date"]==date_object.strftime("%#m/%#d/%Y")]
+        fig = px.bar(df, x=df["Hour"], y=df["size"], color=df["Late_By"])
+
+        return string_prefix + date_string, fig, False, True
+###################################################################################
 
 tab3_content = dbc.Card(
     dbc.CardBody(
@@ -444,34 +683,6 @@ def switch_tab(at):
         return tab4_content
 
 
-#TAB 2
-@app.callback(
-    Output("tab2_bus_no", "options"),
-    Output("tab2_bus_no", "value"),
-    Input("tab2_bus_stop_no", "value")
-)
-def select_bus_stop(bus_stop_no):
-    df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}.csv")
-    all_buses = df["bus_number"].unique()
-    options = [{"label": bus_no, "value": bus_no} for bus_no in all_buses]
-    value = all_buses[0]
-
-    return options, value
-
-@app.callback(
-    Output("tab2_bus_graph", "figure"),
-    Input("tab2_bus_stop_no", "value"),
-    Input("tab2_bus_no", "value")
-)
-def select_bus_no(bus_stop_no, bus_no):
-    df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}.csv")
-    df = df[df["bus_number"]==bus_no]
-    df["date"] = pd.to_datetime(df["date"], format="%d/%m/%Y")
-    df = df.groupby(["date", "Late_By"], as_index=False).size()
-    fig = px.bar(df, x=df["date"], y=df["size"], color=df["Late_By"], )
-    # barmode="group"
-
-    return fig
 
 
 
