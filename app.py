@@ -50,11 +50,12 @@ tab1_content = dbc.Card(
                         dcc.RadioItems(
                             id="radioitems",
                             options=[
-                                {"label": "Show All Days", "value": "all_day"},
+                                {"label": "Show All Dates", "value": "all_dates"},
                                 {"label": "Show All Hours", "value": "all_hour"},
-                                {"label": "Show Selected Day", "value": "select_day"},
+                                {"label": "Show by Day of Week", "value": "day_week"},
+                                {"label": "Show Selected Day", "value": "select_day"}
                             ],
-                            value="all_day",
+                            value="all_dates",
                             labelStyle = {"display": "block"}
                         ),
                         dcc.DatePickerSingle(
@@ -145,7 +146,7 @@ def select_bus_no(bus_stop_no, bus_no):
 )
 
 def update_output(date_value, bus_stop_no, bus_no, radioitem):
-    if radioitem == "all_day":
+    if radioitem == "all_dates":
         df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
         df = df[df["bus_number"]==bus_no]
         df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y")
@@ -160,6 +161,16 @@ def update_output(date_value, bus_stop_no, bus_no, radioitem):
         #df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y")
         df = df.groupby(["Hour", "first_next_bus_load"], as_index=False).size()
         fig = px.bar(df, x=df["Hour"], y=df["size"], color=df["first_next_bus_load"], barmode="group")
+
+        return None, fig, True
+
+    if radioitem == "day_week":
+        df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
+        df = df[df["bus_number"]==bus_no]
+        df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y")
+        df["Weekday"] = df["date"].dt.day_name()
+        df = df.groupby(["Weekday", "first_next_bus_load"], as_index=False).size()
+        fig = px.bar(df, x=df["Weekday"], y=df["size"], color=df["first_next_bus_load"], barmode="group")
 
         return None, fig, True
     
