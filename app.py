@@ -102,7 +102,7 @@ tab1_content = dbc.Card(
             dbc.Row(
                 [
                     dbc.Col([
-                        html.Div("Shuttle Bus Dispatch Count on a Daily Basis", className="card-header"),
+                        html.Div("Shuttle Bus Dispatch Count", className="card-header"),
                         html.Div([
                             dcc.Graph(figure=shutfig),
                         ]),
@@ -285,10 +285,10 @@ tab2_content = dbc.Card(
                 [
                     dbc.Col([
                         html.Div("Bus Late Count", className="card-header", style={"margin-top":10}),
-                        # html.Div([
-                        #     html.P("SEA - Seats Available | SDA - Standing Available | LSD - Limited Standing", className="card-text", style={"textAlign":"center"}),
-                        #     dcc.Graph(id="tab2_bus_graph"),
-                        # ]),
+                        html.Div([
+                            # html.P("SEA - Seats Available | SDA - Standing Available | LSD - Limited Standing", className="card-text", style={"textAlign":"center"}),
+                            dcc.Graph(id="tab2_bus_graph"),
+                        ]),
                     ],
                     # className="card border-primary mb-3"
                     ),
