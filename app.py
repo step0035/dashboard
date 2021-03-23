@@ -47,14 +47,19 @@ tab1_content = dbc.Card(
                             ],
                             value="18051"
                         ),
+                        dcc.RadioItems(
+                            id="radioitems",
+                            options=[
+                                {"label": "Show All Days", "value": "all_day"},
+                                {"label": "Show All Hours", "value": "all_hour"},
+                                {"label": "Show Selected Day", "value": "select_day"},
+                            ],
+                            value="all_day",
+                            labelStyle = {"display": "block"}
+                        ),
                         dcc.DatePickerSingle(
                             id='date_picker',
                             style={"margin-top":10},
-                        ),
-                        dcc.Checklist(
-                            id="checkbox",
-                            options=[{"label": "Show All Days", "value": "all"}],
-                            value=["all"]
                         ),
                         html.Div(id='output-container-date-picker-single')
                     ]),
@@ -132,16 +137,34 @@ def select_bus_no(bus_stop_no, bus_no):
 @app.callback(
     Output('output-container-date-picker-single', 'children'),
     Output('tab1_bus_graph', 'figure'),
+    Output("date_picker", "disabled"),
     Input('date_picker', 'date'),
     Input('tab1_bus_stop_no', 'value'),
     Input('tab1_bus_no', 'value'),
-    Input("checkbox", "value")
+    Input("radioitems", "value")
 )
 
-def update_output(date_value, bus_stop_no, bus_no, checkbox):
-    string_prefix = 'You have selected: '
+def update_output(date_value, bus_stop_no, bus_no, radioitem):
+    if radioitem == "all_day":
+        df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
+        df = df[df["bus_number"]==bus_no]
+        df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y")
+        df = df.groupby(["date", "first_next_bus_load"], as_index=False).size()
+        fig = px.bar(df, x=df["date"], y=df["size"], color=df["first_next_bus_load"], barmode="group")
 
-    if checkbox != ["all"]:
+        return None, fig, True
+
+    if radioitem == "all_hour":
+        df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
+        df = df[df["bus_number"]==bus_no]
+        #df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y")
+        df = df.groupby(["Hour", "first_next_bus_load"], as_index=False).size()
+        fig = px.bar(df, x=df["Hour"], y=df["size"], color=df["first_next_bus_load"], barmode="group")
+
+        return None, fig, True
+    
+    if radioitem == "select_day":
+        string_prefix = 'You have selected: '
         date_object = date.fromisoformat(date_value)
         date_string = date_object.strftime('%B %d, %Y')
         df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
@@ -152,16 +175,7 @@ def update_output(date_value, bus_stop_no, bus_no, checkbox):
         df = df[df["date"]==test]
         fig = px.bar(df, x=df["Hour"], y=df["size"], color=df["first_next_bus_load"], barmode="group")
 
-        return string_prefix + date_string, fig
-
-    else:
-        df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
-        df = df[df["bus_number"]==bus_no]
-        df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y")
-        df = df.groupby(["date", "first_next_bus_load"], as_index=False).size()
-        fig = px.bar(df, x=df["date"], y=df["size"], color=df["first_next_bus_load"], barmode="group")
-
-        return None, fig
+        return string_prefix + date_string, fig, False
 
 
 
