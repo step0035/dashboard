@@ -49,7 +49,7 @@ tab1_content = dbc.Card(
                             value="18051"
                         ),
                         dcc.RadioItems(
-                            id="radioitems",
+                            id="tab1_radioitems",
                             options=[
                                 {"label": "Show All Dates", "value": "all_dates"},
                                 {"label": "Show All Hours", "value": "all_hour"},
@@ -60,17 +60,17 @@ tab1_content = dbc.Card(
                             value="all_dates",
                             labelStyle = {"display": "block"}
                         ),
-                        html.Div(id='output-container-date-picker-single')
+                        html.Div(id='tab1_output-container-date-picker-single')
                     ]),
                     dbc.Col([
                         html.Div("Bus Number", className="card-header"),
                         dcc.Dropdown(id="tab1_bus_no"),
                         dcc.DatePickerSingle(
-                            id='date_picker',
+                            id='tab1_date_picker',
                             style={"margin-top":10},
                         ),
                         dcc.Dropdown(
-                            id="weekdays",
+                            id="tab1_weekdays",
                             options=[
                                 {"label": "Monday", "value": "Monday"},
                                 {"label": "Tuesday", "value": "Tuesday"},
@@ -133,9 +133,9 @@ def select_bus_stop(bus_stop_no):
 
 # Choose bus no
 @app.callback(
-    Output("date_picker", "min_date_allowed"),
-    Output("date_picker", "max_date_allowed"),
-    Output("date_picker", "date"),
+    Output("tab1_date_picker", "min_date_allowed"),
+    Output("tab1_date_picker", "max_date_allowed"),
+    Output("tab1_date_picker", "date"),
     Input("tab1_bus_stop_no", "value"),
     Input("tab1_bus_no", "value")
 )
@@ -151,15 +151,15 @@ def select_bus_no(bus_stop_no, bus_no):
 
 # Filters
 @app.callback(
-    Output('output-container-date-picker-single', 'children'),
+    Output('tab1_output-container-date-picker-single', 'children'),
     Output('tab1_bus_graph', 'figure'),
-    Output("date_picker", "disabled"),
-    Output('weekdays', 'disabled'),
-    Input('date_picker', 'date'),
+    Output("tab1_date_picker", "disabled"),
+    Output('tab1_weekdays', 'disabled'),
+    Input('tab1_date_picker', 'date'),
     Input('tab1_bus_stop_no', 'value'),
     Input('tab1_bus_no', 'value'),
-    Input("radioitems", "value"),
-    Input("weekdays", "value")
+    Input("tab1_radioitems", "value"),
+    Input("tab1_weekdays", "value")
 )
 
 def update_output(date_value, bus_stop_no, bus_no, radioitem, weekday):
