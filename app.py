@@ -48,12 +48,14 @@ tab1_content = dbc.Card(
                             value="18051"
                         ),
                         dcc.DatePickerSingle(
-                            id='my-date-picker-range',
+                            id='date_picker',
                             min_date_allowed=date(2020, 12, 24),
                             max_date_allowed=date(2021, 3, 5),
+                            style={"margin-top":10},
                             # initial_visible_month=date(2020, 12, 24),
                             # end_date=date(2021, 3, 5)
                         ),
+                        html.Div(id='output-container-date-picker-single')
                     ]),
                     dbc.Col([
                         html.Div("Bus Number", className="card-header"),
@@ -89,6 +91,59 @@ tab1_content = dbc.Card(
     ),
     className="mt-3"
 )
+
+##########################################################################################################################
+#TAB 1
+@app.callback(
+    Output("tab1_bus_no", "options"),
+    Output("tab1_bus_no", "value"),
+    Input("tab1_bus_stop_no", "value")
+)
+def select_bus_stop(bus_stop_no):
+    df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
+    all_buses = df["bus_number"].unique()
+    options = [{"label": bus_no, "value": bus_no} for bus_no in all_buses]
+    value = all_buses[0]
+
+    return options, value
+
+@app.callback(
+    Output("tab1_bus_graph", "figure"),
+    Input("tab1_bus_stop_no", "value"),
+    Input("tab1_bus_no", "value")
+)
+def select_bus_no(bus_stop_no, bus_no):
+    df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
+    df = df[df["bus_number"]==bus_no]
+    df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y")
+    df = df.groupby(["date", "first_next_bus_load"], as_index=False).size()
+    fig = px.bar(df, x=df["date"], y=df["size"], color=df["first_next_bus_load"], barmode="group")
+
+    return fig
+
+# Date Picker
+@app.callback(
+    Output('output-container-date-picker-single', 'children'),
+    Input('date_picker', 'date'))
+
+def update_output(date_value):
+    string_prefix = 'You have selected: '
+    if date_value is not None:
+        date_object = date.fromisoformat(date_value)
+        date_string = date_object.strftime('%B %d, %Y')
+        return string_prefix + date_string
+
+@app.callback(
+    Output("tab1_bus_graph", "figure"),
+    Input("tab1_bus_stop_no", "value"),
+    Input("tab1_bus_no", "value"),
+    Input("date_value", "value")
+
+def update_figure(bus_stop, bus_number, date_value):
+
+
+
+##########################################################################################################################
 
 #set content of tab2
 tab2_content = dbc.Card(
@@ -310,33 +365,6 @@ def switch_tab(at):
     elif at == "tab-4":
         return tab4_content
 
-#TAB 1
-@app.callback(
-    Output("tab1_bus_no", "options"),
-    Output("tab1_bus_no", "value"),
-    Input("tab1_bus_stop_no", "value")
-)
-def select_bus_stop(bus_stop_no):
-    df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
-    all_buses = df["bus_number"].unique()
-    options = [{"label": bus_no, "value": bus_no} for bus_no in all_buses]
-    value = all_buses[0]
-
-    return options, value
-
-@app.callback(
-    Output("tab1_bus_graph", "figure"),
-    Input("tab1_bus_stop_no", "value"),
-    Input("tab1_bus_no", "value")
-)
-def select_bus_no(bus_stop_no, bus_no):
-    df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
-    df = df[df["bus_number"]==bus_no]
-    df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y")
-    df = df.groupby(["date", "first_next_bus_load"], as_index=False).size()
-    fig = px.bar(df, x=df["date"], y=df["size"], color=df["first_next_bus_load"], barmode="group")
-
-    return fig
 
 #TAB 2
 @app.callback(
@@ -366,6 +394,8 @@ def select_bus_no(bus_stop_no, bus_no):
     # barmode="group"
 
     return fig
+
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)
