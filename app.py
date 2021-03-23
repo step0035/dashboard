@@ -11,6 +11,7 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 from datetime import date
+from pandas.api.types import CategoricalDtype
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.FLATLY])
 app.config.suppress_callback_exceptions = True
@@ -167,8 +168,11 @@ def update_output(date_value, bus_stop_no, bus_no, radioitem):
     if radioitem == "day_week":
         df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
         df = df[df["bus_number"]==bus_no]
+        cats = [ 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+        cat_type = CategoricalDtype(categories=cats, ordered=True)
         df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y")
         df["Weekday"] = df["date"].dt.day_name()
+        df['Weekday']=df['Weekday'].astype(cat_type)
         df = df.groupby(["Weekday", "first_next_bus_load"], as_index=False).size()
         fig = px.bar(df, x=df["Weekday"], y=df["size"], color=df["first_next_bus_load"], barmode="group")
 
@@ -187,9 +191,6 @@ def update_output(date_value, bus_stop_no, bus_no, radioitem):
         fig = px.bar(df, x=df["Hour"], y=df["size"], color=df["first_next_bus_load"], barmode="group")
 
         return string_prefix + date_string, fig, False
-
-
-
 
 ##########################################################################################################################
 
