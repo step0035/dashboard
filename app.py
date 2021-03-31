@@ -46,6 +46,38 @@ tab1_content = dbc.Card(
                                 {'label': 'Portsdown Rd (Opp one-north Stn/Galaxis)', 'value': '18151'},
                                 {'label': 'Buona Vista Flyover (Opp Ayer Rajah Ind Est)', 'value': '18121'},
                                 {'label': 'Buona Vista Flyover (Ayer Rajah Ind Est)', 'value': '18129'},
+
+                                # First Batch
+                                # {'label': '[1] Ayer Rajah Ave (one-north Stn)', 'value': '18051old'},
+                                # {'label': '[1] Ayer Rajah Ave (Opp one-north Stn)', 'value': '18059old'},
+                                # {'label': '[1] Portsdown Rd (one-north Stn/Galaxis)', 'value': '18159old'},
+                                # {'label': '[1] Portsdown Rd (Opp one-north Stn/Galaxis)', 'value': '18151old'},
+                                # {'label': '[1] Buona Vista Flyover (Opp Ayer Rajah Ind Est)', 'value': '18121old'},
+                                # {'label': '[1] Buona Vista Flyover (Ayer Rajah Ind Est)', 'value': '18129old'},
+
+
+                                # Newly Added
+                                {'label': 'BUONA VISTA STN EXIT C', 'value': '11361'},
+                                {'label': 'BUONA VISTA STN EXIT D', 'value': '11369'},
+                                {'label': 'OPP GEMPLUS', 'value': '18021'},
+                                {'label': 'TEMPCO MFG', 'value': '18029'},
+                                {'label': 'BLK 71', 'value': '18061'},
+                                {'label': 'OPP BLK 71', 'value': '18069'},
+                                {'label': 'BLK 55', 'value': '18081'},
+                                {'label': 'SINGAPORE POST', 'value': '18089'},
+                                {'label': 'AYER RAJAH BUS PK', 'value': '18099'},
+                                {'label': 'BEF JLN HANG JEBAT (now Infinite Studios)', 'value': '18211'},
+                                {'label': 'MEDIA CAMPUS', 'value': '18201'},
+                                {'label': 'AFT WHITCHURCH RD', 'value': '18199'},
+                                {'label': 'BEF WHITCHURCH RD', 'value': '18191'},
+                                {'label': 'RAEBURN PK SCH (now is Tanglin Trust Sch)', 'value': '18189'},
+                                {'label': 'OPP RAEBURN PK SCH', 'value': '18181'},
+                                {'label': 'OPP WEYHILL CL', 'value': '18179'},
+                                {'label': 'BEF WEYHILL CL', 'value': '18171'},
+                                {'label': 'ONE-NORTH STN', 'value': '18159'},
+                                {'label': 'OPP ONE-NORTH ST', 'value': '18151'},
+                                {'label': 'ESSEC BUSINESS SCH', 'value': '18149'},
+                                {'label': 'AFT ANGLO-CHINESE JC', 'value': '18141'},
                             ],
                             value="18051"
                         ),
@@ -125,7 +157,7 @@ tab1_content = dbc.Card(
     Input("tab1_bus_stop_no", "value")
 )
 def select_bus_stop(bus_stop_no):
-    df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
+    df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}.csv")
     all_buses = df["bus_number"].unique()
     options = [{"label": bus_no, "value": bus_no} for bus_no in all_buses]
     value = all_buses[0] #default to first option
@@ -141,7 +173,7 @@ def select_bus_stop(bus_stop_no):
     Input("tab1_bus_no", "value")
 )
 def select_bus_no(bus_stop_no, bus_no):
-    df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
+    df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}.csv")
     df = df[df["bus_number"]==bus_no]
     min_date_allowed = df["date"].unique()[0]
     max_date_allowed = df["date"].unique()[-1]
@@ -165,7 +197,7 @@ def select_bus_no(bus_stop_no, bus_no):
 
 def update_output(date_value, bus_stop_no, bus_no, radioitem, weekday):
     if radioitem == "all_dates":
-        df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
+        df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}.csv")
         df = df[df["bus_number"]==bus_no]
         df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y")
         df = df.groupby(["date", "first_next_bus_load"], as_index=False).size()
@@ -174,7 +206,7 @@ def update_output(date_value, bus_stop_no, bus_no, radioitem, weekday):
         return None, fig, True, True
 
     if radioitem == "all_hour":
-        df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
+        df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}.csv")
         df = df[df["bus_number"]==bus_no]
         #df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y")
         df = df.groupby(["Hour", "first_next_bus_load"], as_index=False).size()
@@ -183,7 +215,7 @@ def update_output(date_value, bus_stop_no, bus_no, radioitem, weekday):
         return None, fig, True, True
 
     if radioitem == "day_week":
-        df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
+        df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}.csv")
         df = df[df["bus_number"]==bus_no]
         cats = [ 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
         cat_type = CategoricalDtype(categories=cats, ordered=True)
@@ -196,7 +228,7 @@ def update_output(date_value, bus_stop_no, bus_no, radioitem, weekday):
         return None, fig, True, True
 
     if radioitem == "weekday":
-        df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
+        df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}.csv")
         df = df[df["bus_number"]==bus_no]
         cats = [ 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
         cat_type = CategoricalDtype(categories=cats, ordered=True)
@@ -213,7 +245,7 @@ def update_output(date_value, bus_stop_no, bus_no, radioitem, weekday):
         string_prefix = 'You have selected: '
         date_object = date.fromisoformat(date_value)
         date_string = date_object.strftime('%B %d, %Y')
-        df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
+        df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}.csv")
         df = df[df["bus_number"]==bus_no]
         df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y")
         df = df.groupby(["date", 'Hour', "first_next_bus_load"], as_index=False).size()
@@ -241,6 +273,38 @@ tab2_content = dbc.Card(
                                 {'label': 'Portsdown Rd (Opp one-north Stn/Galaxis)', 'value': '18151'},
                                 {'label': 'Buona Vista Flyover (Opp Ayer Rajah Ind Est)', 'value': '18121'},
                                 {'label': 'Buona Vista Flyover (Ayer Rajah Ind Est)', 'value': '18129'},
+
+                                # First Batch
+                                # {'label': '[1] Ayer Rajah Ave (one-north Stn)', 'value': '18051old'},
+                                # {'label': '[1] Ayer Rajah Ave (Opp one-north Stn)', 'value': '18059old'},
+                                # {'label': '[1] Portsdown Rd (one-north Stn/Galaxis)', 'value': '18159old'},
+                                # {'label': '[1] Portsdown Rd (Opp one-north Stn/Galaxis)', 'value': '18151old'},
+                                # {'label': '[1] Buona Vista Flyover (Opp Ayer Rajah Ind Est)', 'value': '18121old'},
+                                # {'label': '[1] Buona Vista Flyover (Ayer Rajah Ind Est)', 'value': '18129old'},
+
+
+                                # Newly Added
+                                {'label': 'BUONA VISTA STN EXIT C', 'value': '11361'},
+                                {'label': 'BUONA VISTA STN EXIT D', 'value': '11369'},
+                                {'label': 'OPP GEMPLUS', 'value': '18021'},
+                                {'label': 'TEMPCO MFG', 'value': '18029'},
+                                {'label': 'BLK 71', 'value': '18061'},
+                                {'label': 'OPP BLK 71', 'value': '18069'},
+                                {'label': 'BLK 55', 'value': '18081'},
+                                {'label': 'SINGAPORE POST', 'value': '18089'},
+                                {'label': 'AYER RAJAH BUS PK', 'value': '18099'},
+                                {'label': 'BEF JLN HANG JEBAT (now Infinite Studios)', 'value': '18211'},
+                                {'label': 'MEDIA CAMPUS', 'value': '18201'},
+                                {'label': 'AFT WHITCHURCH RD', 'value': '18199'},
+                                {'label': 'BEF WHITCHURCH RD', 'value': '18191'},
+                                {'label': 'RAEBURN PK SCH (now is Tanglin Trust Sch)', 'value': '18189'},
+                                {'label': 'OPP RAEBURN PK SCH', 'value': '18181'},
+                                {'label': 'OPP WEYHILL CL', 'value': '18179'},
+                                {'label': 'BEF WEYHILL CL', 'value': '18171'},
+                                {'label': 'ONE-NORTH STN', 'value': '18159'},
+                                {'label': 'OPP ONE-NORTH ST', 'value': '18151'},
+                                {'label': 'ESSEC BUSINESS SCH', 'value': '18149'},
+                                {'label': 'AFT ANGLO-CHINESE JC', 'value': '18141'},
                             ],
                             value="18051"
                         ),
@@ -307,7 +371,7 @@ tab2_content = dbc.Card(
     Input("tab2_bus_stop_no", "value")
 )
 def select_bus_stop(bus_stop_no):
-    df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
+    df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}.csv")
     all_buses = df["bus_number"].unique()
     options = [{"label": bus_no, "value": bus_no} for bus_no in all_buses]
     value = all_buses[0] #default to first option
@@ -323,7 +387,7 @@ def select_bus_stop(bus_stop_no):
     Input("tab2_bus_no", "value")
 )
 def select_bus_no(bus_stop_no, bus_no):
-    df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
+    df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}.csv")
     df = df[df["bus_number"]==bus_no]
     min_date_allowed = df["date"].unique()[0]
     max_date_allowed = df["date"].unique()[-1]
@@ -347,7 +411,7 @@ def select_bus_no(bus_stop_no, bus_no):
 
 def update_output(date_value, bus_stop_no, bus_no, radioitem, weekday):
     if radioitem == "all_dates":
-        df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
+        df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}.csv")
         df = df[df["bus_number"]==bus_no]
         df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y")
         df = df.groupby(["date", "Late_By"], as_index=False).size()
@@ -356,7 +420,7 @@ def update_output(date_value, bus_stop_no, bus_no, radioitem, weekday):
         return None, fig, True, True
 
     if radioitem == "all_hour":
-        df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
+        df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}.csv")
         df = df[df["bus_number"]==bus_no]
         #df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y")
         df = df.groupby(["Hour", "Late_By"], as_index=False).size()
@@ -365,7 +429,7 @@ def update_output(date_value, bus_stop_no, bus_no, radioitem, weekday):
         return None, fig, True, True
 
     if radioitem == "day_week":
-        df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
+        df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}.csv")
         df = df[df["bus_number"]==bus_no]
         cats = [ 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
         cat_type = CategoricalDtype(categories=cats, ordered=True)
@@ -378,7 +442,7 @@ def update_output(date_value, bus_stop_no, bus_no, radioitem, weekday):
         return None, fig, True, True
 
     if radioitem == "weekday":
-        df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
+        df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}.csv")
         df = df[df["bus_number"]==bus_no]
         cats = [ 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
         cat_type = CategoricalDtype(categories=cats, ordered=True)
@@ -408,7 +472,7 @@ def update_output(date_value, bus_stop_no, bus_no, radioitem, weekday):
         string_prefix = 'You have selected: '
         date_object = date.fromisoformat(date_value)
         date_string = date_object.strftime('%B %d, %Y')
-        df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}_2nd.csv")
+        df = pd.read_csv(f"./data/bus_data/new_bus_arrival_{bus_stop_no}.csv")
         df = df[df["bus_number"]==bus_no]
         df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y")
         df = df.groupby(["date", 'Hour', "Late_By"], as_index=False).size()
