@@ -477,7 +477,7 @@ def update_output(date_value, bus_stop_no, bus_no, radioitem, weekday):
         df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y")
         df = df.groupby(["date", 'Hour', "Late_By"], as_index=False).size()
         df = df[df["date"]==date_object.strftime("%#m/%#d/%Y")]
-        fig = px.bar(df, x=df["Hour"], y=df["size"], color=df["Late_By"])
+        fig = px.bar(df, x=df["Hour"], y=df["Late_By"], barmode="group")
 
         return string_prefix + date_string, fig, False, True
 ###################################################################################
