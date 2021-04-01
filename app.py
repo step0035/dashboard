@@ -74,8 +74,6 @@ tab1_content = dbc.Card(
                                 {'label': 'OPP RAEBURN PK SCH - 18181', 'value': '18181'},
                                 {'label': 'OPP WEYHILL CL - 18179', 'value': '18179'},
                                 {'label': 'BEF WEYHILL CL - 18171', 'value': '18171'},
-                                # {'label': 'ONE-NORTH STN - 18159', 'value': '18159'},
-                                # {'label': 'OPP ONE-NORTH ST - 18151', 'value': '18151'},
                                 {'label': 'ESSEC BUSINESS SCH - 18149', 'value': '18149'},
                                 {'label': 'AFT ANGLO-CHINESE JC - 18141', 'value': '18141'},
                             ],
@@ -301,8 +299,6 @@ tab2_content = dbc.Card(
                                 {'label': 'OPP RAEBURN PK SCH - 18181', 'value': '18181'},
                                 {'label': 'OPP WEYHILL CL - 18179', 'value': '18179'},
                                 {'label': 'BEF WEYHILL CL - 18171', 'value': '18171'},
-                                # {'label': 'ONE-NORTH STN - 18159', 'value': '18159'},
-                                # {'label': 'OPP ONE-NORTH ST - 18151', 'value': '18151'},
                                 {'label': 'ESSEC BUSINESS SCH - 18149', 'value': '18149'},
                                 {'label': 'AFT ANGLO-CHINESE JC - 18141', 'value': '18141'},
                             ],
@@ -620,7 +616,7 @@ app.layout = html.Div([
         [
             html.H3("Transport Efficiency at One-North", className="display-3"),
             html.P("On this dashboard, we aim to provide a visualisation of the data that we have collected and processed over the past 2 months.", className="lead"),
-            html.P("Data Collection Phase: 24 Dec 2020 - 26 Jan 2021", className="lead"),
+            html.P("Data Collection Phase: 30 January 2021 - 5 March 2021", className="lead"),
             html.Hr(className="my-4"),
 
             html.Div(
