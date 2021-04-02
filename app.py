@@ -128,13 +128,73 @@ tab1_content = dbc.Card(
             dbc.Row(
                 [
                     dbc.Col([
-                        html.Div("Shuttle Bus Dispatch Count", className="card-header"),
+                        html.Div("Shuttle Bus Dispatch Count - Dummy Data", className="card-header"),
                         html.Div([
                             dcc.Graph(figure=shutfig),
                         ]),
                     ],
                     # className="card border-primary mb-3"
                     ),
+                ]),
+
+                dbc.Row(
+                [
+                    dbc.Col(html.Div(
+                        [
+                            html.Div("Bus 91 (High Load) Accumulative Capture", className="card-header"),
+                            html.Video(
+                                controls = True,
+                                autoPlay=True,
+                                src='/static/Bus91SDA_Accumulate.mp4'
+                            ),
+                        ],
+                        className="card border-primary mb-3"
+                        )),
+                ]),
+
+                dbc.Row(
+                [
+                    dbc.Col(html.Div(
+                        [
+                            html.Div("Bus 91 Temporal Capture", className="card-header"),
+                            html.Video(
+                                controls = True,
+                                autoPlay=True,
+                                src='/static/Bus91Temporal.mp4'
+                            ),
+                        ],
+                        className="card border-primary mb-3"
+                        )),
+                ]),
+
+                dbc.Row(
+                [
+                    dbc.Col(html.Div(
+                        [
+                            html.Div("Bus 91 Temporal Capture", className="card-header"),
+                            html.Video(
+                                controls = True,
+                                autoPlay=True,
+                                src='/static/Bus191SDA_Accumulate.mp4'
+                            ),
+                        ],
+                        className="card border-primary mb-3"
+                        )),
+                ]),
+
+                dbc.Row(
+                [
+                    dbc.Col(html.Div(
+                        [
+                            html.Div("Bus 91 Temporal Capture", className="card-header"),
+                            html.Video(
+                                controls = True,
+                                autoPlay=True,
+                                src='/static/Bus191Temporal.mp4'
+                            ),
+                        ],
+                        className="card border-primary mb-3"
+                        )),
                 ]),
         ]
     ),
@@ -517,11 +577,41 @@ tab3_content = dbc.Card(
                 [
                     dbc.Col(html.Div(
                         [
-                            html.Div("Taxi Temporal Video", className="card-header"),
+                            html.Div("Taxi Temporal Capture", className="card-header"),
                             html.Video(
                                 controls = True,
                                 autoPlay=True,
                                 src='/static/taxi_time_series.mp4'
+                            ),
+                        ],
+                        className="card border-primary mb-3"
+                        )),
+                ]),
+
+                dbc.Row(
+                [
+                    dbc.Col(html.Div(
+                        [
+                            html.Div("Taxi Heat Map Capture - Phase 1", className="card-header"),
+                            html.Video(
+                                controls = True,
+                                autoPlay=True,
+                                src='/static/.mp4'
+                            ),
+                        ],
+                        className="card border-primary mb-3"
+                        )),
+                ]),
+
+                dbc.Row(
+                [
+                    dbc.Col(html.Div(
+                        [
+                            html.Div("Taxi Heat Map Capture - Phase 2", className="card-header"),
+                            html.Video(
+                                controls = True,
+                                autoPlay=True,
+                                src='/static/taxi_temporal_phase2.mp4'
                             ),
                         ],
                         className="card border-primary mb-3"
