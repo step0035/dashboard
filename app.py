@@ -47,15 +47,6 @@ tab1_content = dbc.Card(
                                 {'label': 'Buona Vista Flyover (Opp Ayer Rajah Ind Est) - 18121', 'value': '18121'},
                                 {'label': 'Buona Vista Flyover (Ayer Rajah Ind Est) - 18129', 'value': '18129'},
 
-                                # First Batch
-                                # {'label': '[1] Ayer Rajah Ave (one-north Stn)', 'value': '18051old'},
-                                # {'label': '[1] Ayer Rajah Ave (Opp one-north Stn)', 'value': '18059old'},
-                                # {'label': '[1] Portsdown Rd (one-north Stn/Galaxis)', 'value': '18159old'},
-                                # {'label': '[1] Portsdown Rd (Opp one-north Stn/Galaxis)', 'value': '18151old'},
-                                # {'label': '[1] Buona Vista Flyover (Opp Ayer Rajah Ind Est)', 'value': '18121old'},
-                                # {'label': '[1] Buona Vista Flyover (Ayer Rajah Ind Est)', 'value': '18129old'},
-
-
                                 # Newly Added
                                 {'label': 'BUONA VISTA STN EXIT C - 11361', 'value': '11361'},
                                 {'label': 'BUONA VISTA STN EXIT D - 11369', 'value': '11369'},
@@ -79,8 +70,9 @@ tab1_content = dbc.Card(
                             ],
                             value="18051"
                         ),
-                        dcc.RadioItems(
-                            id="tab1_radioitems",
+                        html.Div("Visualization Options", className="card-header", style={"margin-top":0}),
+                        dcc.Dropdown(
+                            id="tab1_viz_option",
                             options=[
                                 {"label": "Show All Dates", "value": "all_dates"},
                                 {"label": "Show All Hours", "value": "all_hour"},
@@ -88,18 +80,27 @@ tab1_content = dbc.Card(
                                 {"label": "Filter by Weekday", "value": "weekday"},
                                 {"label": "Show Selected Day", "value": "select_day"}
                             ],
-                            value="all_dates",
-                            labelStyle = {"display": "block"}
+                            value="all_dates"
                         ),
+                        # dcc.RadioItems(
+                        #     id="tab1_radioitems",
+                        #     options=[
+                        #         {"label": "Show All Dates", "value": "all_dates"},
+                        #         {"label": "Show All Hours", "value": "all_hour"},
+                        #         {"label": "Show by Day of Week", "value": "day_week"},
+                        #         {"label": "Filter by Weekday", "value": "weekday"},
+                        #         {"label": "Show Selected Day", "value": "select_day"}
+                        #     ],
+                        #     value="all_dates",
+                        #     labelStyle = {"display": "block"}
+                        # ),
                         html.Div(id='tab1_output-container-date-picker-single')
                     ]),
                     dbc.Col([
                         html.Div("Bus Number", className="card-header"),
                         dcc.Dropdown(id="tab1_bus_no"),
-                        dcc.DatePickerSingle(
-                            id='tab1_date_picker',
-                            style={"margin-top":10},
-                        ),
+
+                        html.Div("Only Available if you have selected 'Day of Week'", className="card-header"),
                         dcc.Dropdown(
                             id="tab1_weekdays",
                             options=[
@@ -112,7 +113,13 @@ tab1_content = dbc.Card(
                                 {"label": "Sunday", "value": "Sunday"}
                             ],
                             value = "Monday"
-                        )
+                        ),
+
+                        html.Div("Only Available if you have selected 'Show Selected Day'", className="card-header"),
+                        dcc.DatePickerSingle(
+                            id='tab1_date_picker',
+                        ),
+                        
                     ]),
                 ]),
 
@@ -189,7 +196,8 @@ def select_bus_no(bus_stop_no, bus_no):
     Input('tab1_date_picker', 'date'),
     Input('tab1_bus_stop_no', 'value'),
     Input('tab1_bus_no', 'value'),
-    Input("tab1_radioitems", "value"),
+    Input("tab1_viz_option", "value"),
+    # Input("tab1_radioitems", "value"),
     Input("tab1_weekdays", "value")
 )
 
@@ -271,15 +279,6 @@ tab2_content = dbc.Card(
                                 {'label': 'Portsdown Rd (Opp one-north Stn/Galaxis) - 18151', 'value': '18151'},
                                 {'label': 'Buona Vista Flyover (Opp Ayer Rajah Ind Est) - 18121', 'value': '18121'},
                                 {'label': 'Buona Vista Flyover (Ayer Rajah Ind Est) - 18129', 'value': '18129'},
-
-                                # First Batch
-                                # {'label': '[1] Ayer Rajah Ave (one-north Stn)', 'value': '18051old'},
-                                # {'label': '[1] Ayer Rajah Ave (Opp one-north Stn)', 'value': '18059old'},
-                                # {'label': '[1] Portsdown Rd (one-north Stn/Galaxis)', 'value': '18159old'},
-                                # {'label': '[1] Portsdown Rd (Opp one-north Stn/Galaxis)', 'value': '18151old'},
-                                # {'label': '[1] Buona Vista Flyover (Opp Ayer Rajah Ind Est)', 'value': '18121old'},
-                                # {'label': '[1] Buona Vista Flyover (Ayer Rajah Ind Est)', 'value': '18129old'},
-
 
                                 # Newly Added
                                 {'label': 'BUONA VISTA STN EXIT C - 11361', 'value': '11361'},
@@ -654,10 +653,6 @@ def switch_tab(at):
     elif at == "tab-4":
         return tab4_content
 
-
-
-
-
 if __name__ == '__main__':
     app.run_server(debug=True)
 
@@ -673,3 +668,11 @@ if __name__ == '__main__':
 # # Graph 2 S
 # load_df2 = df.groupby(["date", "Late_By"], as_index=False).size()
 # fig2 = px.bar(load_df2, x=load_df2["date"], y=load_df2["size"], color=load_df2["Late_By"], barmode="group")
+
+# First Batch
+                                # {'label': '[1] Ayer Rajah Ave (one-north Stn)', 'value': '18051old'},
+                                # {'label': '[1] Ayer Rajah Ave (Opp one-north Stn)', 'value': '18059old'},
+                                # {'label': '[1] Portsdown Rd (one-north Stn/Galaxis)', 'value': '18159old'},
+                                # {'label': '[1] Portsdown Rd (Opp one-north Stn/Galaxis)', 'value': '18151old'},
+                                # {'label': '[1] Buona Vista Flyover (Opp Ayer Rajah Ind Est)', 'value': '18121old'},
+                                # {'label': '[1] Buona Vista Flyover (Ayer Rajah Ind Est)', 'value': '18129old'},
