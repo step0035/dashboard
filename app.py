@@ -82,18 +82,7 @@ tab1_content = dbc.Card(
                             ],
                             value="all_dates"
                         ),
-                        # dcc.RadioItems(
-                        #     id="tab1_radioitems",
-                        #     options=[
-                        #         {"label": "Show All Dates", "value": "all_dates"},
-                        #         {"label": "Show All Hours", "value": "all_hour"},
-                        #         {"label": "Show by Day of Week", "value": "day_week"},
-                        #         {"label": "Filter by Weekday", "value": "weekday"},
-                        #         {"label": "Show Selected Day", "value": "select_day"}
-                        #     ],
-                        #     value="all_dates",
-                        #     labelStyle = {"display": "block"}
-                        # ),
+                        
                         html.Div(id='tab1_output-container-date-picker-single')
                     ]),
                     dbc.Col([
@@ -207,7 +196,11 @@ def update_output(date_value, bus_stop_no, bus_no, radioitem, weekday):
         df = df[df["bus_number"]==bus_no]
         df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y")
         df = df.groupby(["date", "first_next_bus_load"], as_index=False).size()
-        fig = px.bar(df, x=df["date"], y=df["size"], color=df["first_next_bus_load"], barmode="group")
+        fig = px.bar(df, x=df["date"], y=df["size"], color=df["first_next_bus_load"], barmode="group", labels={
+                    "size": "Frequency | Occurences",
+                    "date": "Date",
+                    "first_next_bus_load": "Bus Load"
+                },)
 
         return None, fig, True, True
 
@@ -216,7 +209,11 @@ def update_output(date_value, bus_stop_no, bus_no, radioitem, weekday):
         df = df[df["bus_number"]==bus_no]
         #df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y")
         df = df.groupby(["Hour", "first_next_bus_load"], as_index=False).size()
-        fig = px.bar(df, x=df["Hour"], y=df["size"], color=df["first_next_bus_load"], barmode="group")
+        fig = px.bar(df, x=df["Hour"], y=df["size"], color=df["first_next_bus_load"], barmode="group", labels={
+                    "size": "Frequency | Occurences",
+                    "date": "Hour (24h)",
+                    "first_next_bus_load": "Bus Load"
+                },)
 
         return None, fig, True, True
 
@@ -229,7 +226,11 @@ def update_output(date_value, bus_stop_no, bus_no, radioitem, weekday):
         df["Weekday"] = df["date"].dt.day_name()
         df['Weekday']=df['Weekday'].astype(cat_type)
         df = df.groupby(["Weekday", "first_next_bus_load"], as_index=False).size()
-        fig = px.bar(df, x=df["Weekday"], y=df["size"], color=df["first_next_bus_load"], barmode="group")
+        fig = px.bar(df, x=df["Weekday"], y=df["size"], color=df["first_next_bus_load"], barmode="group", labels={
+                    "size": "Frequency | Occurences",
+                    "Weekday": "Day",
+                    "first_next_bus_load": "Bus Load"
+                },)
 
         return None, fig, True, True
 
@@ -243,7 +244,11 @@ def update_output(date_value, bus_stop_no, bus_no, radioitem, weekday):
         df['Weekday']=df['Weekday'].astype(cat_type)
         df = df.groupby(["Weekday", "Hour", "first_next_bus_load"], as_index=False).size()
         df = df[df["Weekday"] == weekday]
-        fig = px.bar(df, x=df["Hour"], y=df["size"], color=df["first_next_bus_load"], barmode="group")
+        fig = px.bar(df, x=df["Hour"], y=df["size"], color=df["first_next_bus_load"], barmode="group", labels={
+                    "size": "Frequency | Occurences",
+                    "Hour": "Hour",
+                    "first_next_bus_load": "Bus Load"
+                },)
 
         return None, fig, True, False
     
@@ -256,7 +261,11 @@ def update_output(date_value, bus_stop_no, bus_no, radioitem, weekday):
         df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y")
         df = df.groupby(["date", 'Hour', "first_next_bus_load"], as_index=False).size()
         df = df[df["date"]==date_object.strftime("%#m/%#d/%Y")]
-        fig = px.bar(df, x=df["Hour"], y=df["size"], color=df["first_next_bus_load"], barmode="group")
+        fig = px.bar(df, x=df["Hour"], y=df["size"], color=df["first_next_bus_load"], barmode="group", labels={
+                    "size": "Frequency | Occurences",
+                    "Hour": "Hour",
+                    "first_next_bus_load": "Bus Load"
+                },)
 
         return string_prefix + date_string, fig, False, True
 
@@ -303,27 +312,27 @@ tab2_content = dbc.Card(
                             ],
                             value="18051"
                         ),
-                        dcc.RadioItems(
-                            id="tab2_radioitems",
+
+                        html.Div("Visualization Options", className="card-header", style={"margin-top":0}),
+                        dcc.Dropdown(
+                            id="tab2_viz_option",
                             options=[
                                 {"label": "Show All Dates", "value": "all_dates"},
                                 {"label": "Show All Hours", "value": "all_hour"},
                                 {"label": "Show by Day of Week", "value": "day_week"},
-                                {"label": "Filter by Weekday", "value": "weekday"},
+                                {"label": "Filter by Weekday (Inclusive of Customer Threshold)", "value": "weekday"},
                                 {"label": "Show Selected Day", "value": "select_day"}
                             ],
-                            value="all_dates",
-                            labelStyle = {"display": "block"}
+                            value="all_dates"
                         ),
+
                         html.Div(id='tab2_output-container-date-picker-single')
                     ]),
                     dbc.Col([
                         html.Div("Bus Number", className="card-header"),
                         dcc.Dropdown(id="tab2_bus_no"),
-                        dcc.DatePickerSingle(
-                            id='tab2_date_picker',
-                            style={"margin-top":10},
-                        ),
+
+                        html.Div("Only Available if you have selected 'Day of Week'", className="card-header"),
                         dcc.Dropdown(
                             id="tab2_weekdays",
                             options=[
@@ -336,7 +345,13 @@ tab2_content = dbc.Card(
                                 {"label": "Sunday", "value": "Sunday"}
                             ],
                             value = "Monday"
-                        )
+                        ),
+
+                        html.Div("Only Available if you have selected 'Show Selected Day'", className="card-header"),
+                        dcc.DatePickerSingle(
+                            id='tab2_date_picker',
+                        ),
+                        
                     ]),
                 ]),
 
@@ -400,7 +415,7 @@ def select_bus_no(bus_stop_no, bus_no):
     Input('tab2_date_picker', 'date'),
     Input('tab2_bus_stop_no', 'value'),
     Input('tab2_bus_no', 'value'),
-    Input("tab2_radioitems", "value"),
+    Input("tab2_viz_option", "value"),
     Input("tab2_weekdays", "value")
 )
 
@@ -410,7 +425,11 @@ def update_output(date_value, bus_stop_no, bus_no, radioitem, weekday):
         df = df[df["bus_number"]==bus_no]
         df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y")
         df = df.groupby(["date", "Late_By"], as_index=False).size()
-        fig = px.bar(df, x=df["date"], y=df["size"], color=df["Late_By"])
+        fig = px.bar(df, x=df["date"], y=df["size"], color=df["Late_By"], labels={
+                    "size": "Frequency | Occurences",
+                    "date": "Date",
+                    "Late_By": "Late By in Seconds"
+                })
 
         return None, fig, True, True
 
@@ -419,7 +438,11 @@ def update_output(date_value, bus_stop_no, bus_no, radioitem, weekday):
         df = df[df["bus_number"]==bus_no]
         #df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y")
         df = df.groupby(["Hour", "Late_By"], as_index=False).size()
-        fig = px.bar(df, x=df["Hour"], y=df["size"], color=df["Late_By"])
+        fig = px.bar(df, x=df["Hour"], y=df["size"], color=df["Late_By"], labels={
+                    "size": "Frequency | Occurences",
+                    "Hour": "Hour",
+                    "Late_By": "Late By in Seconds"
+                })
 
         return None, fig, True, True
 
@@ -432,7 +455,11 @@ def update_output(date_value, bus_stop_no, bus_no, radioitem, weekday):
         df["Weekday"] = df["date"].dt.day_name()
         df['Weekday']=df['Weekday'].astype(cat_type)
         df = df.groupby(["Weekday", "Late_By"], as_index=False).size()
-        fig = px.bar(df, x=df["Weekday"], y=df["size"], color=df["Late_By"])
+        fig = px.bar(df, x=df["Weekday"], y=df["size"], color=df["Late_By"], labels={
+                    "size": "Frequency | Occurences",
+                    "Weekday": "Weekday",
+                    "Late_By": "Late By in Seconds"
+                })
 
         return None, fig, True, True
 
@@ -446,7 +473,10 @@ def update_output(date_value, bus_stop_no, bus_no, radioitem, weekday):
         df['Weekday']=df['Weekday'].astype(cat_type)
         df = df.groupby(["Weekday", "Hour"], as_index=False).mean()
         df = df[df["Weekday"] == weekday]
-        fig = px.bar(df, x=df["Hour"], y=df["Late_By"])
+        fig = px.bar(df, x=df["Hour"], y=df["Late_By"], labels={
+                    "Late_By": "Averaged Late By (seconds)",
+                    "Weekday": "Weekday",
+                })
         fig.add_shape(
             go.layout.Shape(
                 type="line",
@@ -472,7 +502,10 @@ def update_output(date_value, bus_stop_no, bus_no, radioitem, weekday):
         df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y")
         df = df.groupby(["date", 'Hour', "Late_By"], as_index=False).size()
         df = df[df["date"]==date_object.strftime("%#m/%#d/%Y")]
-        fig = px.bar(df, x=df["Hour"], y=df["Late_By"], barmode="group")
+        fig = px.bar(df, x=df["Hour"], y=df["Late_By"], barmode="group", labels={
+                    "Late_By": "Late By (seconds)",
+                    "Hour": "Hour",
+                })
 
         return string_prefix + date_string, fig, False, True
 ###################################################################################
@@ -676,3 +709,16 @@ if __name__ == '__main__':
                                 # {'label': '[1] Portsdown Rd (Opp one-north Stn/Galaxis)', 'value': '18151old'},
                                 # {'label': '[1] Buona Vista Flyover (Opp Ayer Rajah Ind Est)', 'value': '18121old'},
                                 # {'label': '[1] Buona Vista Flyover (Ayer Rajah Ind Est)', 'value': '18129old'},
+
+                                # dcc.RadioItems(
+                        #     id="tab1_radioitems",
+                        #     options=[
+                        #         {"label": "Show All Dates", "value": "all_dates"},
+                        #         {"label": "Show All Hours", "value": "all_hour"},
+                        #         {"label": "Show by Day of Week", "value": "day_week"},
+                        #         {"label": "Filter by Weekday", "value": "weekday"},
+                        #         {"label": "Show Selected Day", "value": "select_day"}
+                        #     ],
+                        #     value="all_dates",
+                        #     labelStyle = {"display": "block"}
+                        # ),
